@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Welcome to Housing
+{% endblock %}
+
+{% block content %}
+<body class="only-page en">
+
+	{% include "header.html" %}
+
+<header id="page-header">
+  <div class="main-col">
+    <div id="menu">
+      <ul class="site-nav clearfix">
+        <li class="nav-golden"><a href="/trips/">Trips</a></li>
+        <li class="nav-pulse"><a href="/events/">Events</a></li>
+        <li class="nav-only"><a href="/housing/">Housing</a></li>
+        <li class="nav-trends"><a href="/airport/request">Airport Pickup</a></li>
+        <li class="nav-voices"><a href="#">Gallery</a></li>
+        <li class="nav-my"><a href="#">Contact</a></li>
+      </ul>
+    </div>    
+    <div id="desktop-nav">
+      <ul class="site-nav clearfix">
+        <li class="nav-golden"><a href="/trips/">Trips</a></li>
+        <li class="nav-pulse"><a href="/events/">Events</a></li>
+        <li class="nav-only"><a href="/housing/">Housing</a></li>
+        <li class="nav-trends"><a href="/airport/request">Airport Pickup</a></li>
+        <li class="nav-voices"><a href="#">Gallery</a></li>
+        <li class="nav-voices"><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <h1 id="page-title" style="text-align:center">
+    	<img src="{{ MEDIA_URL }}img/housing.png">
+    </h1>
+  </div>
+</header>
+
+<div id="content" class="clearfix">
+
+  <div class="main-col">
+
+  <div class="js-masonry">
+
+<!-- HOUSING CONTENT HERE -->
+
+  </div>
+  </div> 
+
+</div> 
+	{% include "footer.html" %}
+</body>
+{% endblock %}

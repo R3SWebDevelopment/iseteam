@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div>
+		<img src="{{ local.cover.url }}">
+
+		<iframe width="560" height="315" src="//www.youtube.com/embed/{{ local.get_youtube_id }}" frameborder="0" allowfullscreen></iframe>
+
+		<h1>{{ local.name }}</h1>
+		<h2>{{ local.place }}</h2>
+		<h3>$ {{ local.price }}</h3>
+
+		<p>{{ local.description }}</p>
+
+		<p>{{ local.date }}</p>
+
+		<a href="{{ local.tickets }}">Get Tickets</a>
+
+		<a href="{{ local.facebook }}">View on FB</a>
+
+		<a href="{{ local.facebook }}">MEDIA</a>
+
+	</div>
+{% endblock %}

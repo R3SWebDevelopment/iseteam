@@ -1,0 +1,267 @@
+{% extends "base-index.html" %}
+
+{% block title %}
+	ISE Queretaro
+{% endblock %}
+
+{% block css %}
+	<link href='//fonts.googleapis.com/css?family=Archivo+Narrow:700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+	<link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block scripts %}
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		<script src="{{ MEDIA_URL}}js/jquery.hoverIntent.minified.js"></script>
+		<script type="text/javascript">
+			$(document).on('ready', function(){
+
+				$('.item-left').hover(function(){
+					$(this).animate({
+						'marginLeft':'-=50px'
+					})
+				},function(){
+					$(this).animate({
+						'marginLeft':'+=50px'
+					})
+				});
+
+				$('.item-right').hover(function(){
+					$(this).animate({
+						'marginLeft':'+=50px'
+					})
+				},function(){
+					$(this).animate({
+						'marginLeft':'-=50px'
+					})
+				});
+
+				$('#trips').hover(function(){
+					$(this).animate({
+						'marginRight':'-=50px'
+					})
+				},function(){
+					$(this).animate({
+						'marginRight':'+=50px'
+					})
+				});
+
+
+			});
+		</script>
+{% endblock %}
+
+{% block content %}
+			<div id="fb-root"></div>
+			<script>(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.3&appId=433672563407144";
+			fjs.parentNode.insertBefore(js, fjs);
+			}(document, 'script', 'facebook-jssdk'));</script>
+
+			<!-- Modal -->
+			<div class="modal fade" id="modalCalendar" tabindex="-1" role="dialog" aria-labelledby="modalCalendar" aria-hidden="true">
+			  <div class="modal-dialog">
+			    <div class="modal-content">
+
+					<div class="modal-body">
+						<div class="text-center ise-calendar">
+							<div id="carousel-ise" class="carousel slide" data-ride="carousel">
+							      <ol class="carousel-indicators">
+							        <li data-target="#carousel-ise" data-slide-to="0" class=""></li>
+							        <li data-target="#carousel-ise" data-slide-to="1" class="active"></li>
+							        <li data-target="#carousel-ise" data-slide-to="2" class=""></li>
+							   		<li data-target="#carousel-ise" data-slide-to="2" class=""></li>
+							      </ol>
+							      <div class="carousel-inner">
+							        <div class="item">
+							        	<a href="/trips">
+							        		<img src="{{ MEDIA_URL }}img/calendar/ene_2016.jpg">
+							        	</a>
+							        </div>
+							        <div class="item active">
+							        	<a href="/trips">
+							        		<img src="{{ MEDIA_URL }}img/calendar/feb_2016.jpg">
+							        	</a>
+							        </div>
+							        <div class="item">
+							        	<a href="/trips">
+							        		<img src="{{ MEDIA_URL }}img/calendar/mar_2016.jpg">
+							        	</a>
+							        </div>
+							        <div class="item">
+							        	<a href="/trips">
+							        		<img src="{{ MEDIA_URL }}img/calendar/abr_2016.jpg">
+							        	</a>
+							        </div>
+							   		<div class="item">
+							        	<a href="/trips">
+							        		<img src="{{ MEDIA_URL }}img/calendar/may_2016.jpg">
+							        	</a>
+							        </div>
+							      </div>
+							      <a class="left carousel-control" href="#carousel-ise" role="button" data-slide="prev">
+							        <span class="glyphicon glyphicon-chevron-left"></span>
+							      </a>
+							      <a class="right carousel-control" href="#carousel-ise" role="button" data-slide="next">
+							        <span class="glyphicon glyphicon-chevron-right"></span>
+							      </a>
+							</div>
+						</div>
+					</div>
+
+					<div class="modal-footer">
+				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				    </div>
+
+			    </div>
+			  </div>
+			</div>
+			<div class="content">
+				<div class="text-center">
+					<a href="#" data-toggle="modal" data-target="#modalCalendar">
+						<img class="calendar-button" width="150"src="{{ MEDIA_URL }}img/calendar/calendar-button.png">
+					</a>
+				</div>
+
+				<div class="text-center" style="position: relative;top: 79px;">
+					<h2 class="font-oswald">ISE Queretaro</h2>
+					<a class="btn btn-success btn-lg" href="/">Go to Monterrey</a>
+				</div>
+
+
+				<div class="menu text-center hidden-xs hidden-sm" style="margin-top: 200px;">	
+					<img id="menu-logo" src="/media/img/logo.png" style="top:400px">
+					<div class="menu-left">
+						<a href="/housing/">
+							<div id="housing" class="menu-item item-left">
+								<img src="{{ MEDIA_URL }}/img/housing_white.png" height="60">
+								<span>Housing</span>
+							</div>
+						</a>
+
+						<a href="/airport/">
+							<div id="airport" class="menu-item item-left">
+								<img src="{{ MEDIA_URL }}/img/airport_white.png" height="60">
+								<span>Airport Pickup</span>
+							</div>
+						</a>
+
+						<a target="_blank" href="https://www.facebook.com/media/set/?set=a.831220423590306.1073741875.241299249249096&type=3">
+							<div id="staff" class="menu-item item-left">
+								<img src="{{ MEDIA_URL }}/img/staff_white.png" height="60">
+								<span>Staff</span>
+							</div>
+						</a>
+					</div>
+
+					<div class="menu-right">
+						<a href="/events/">
+							<div id="events" class="menu-item item-right">
+								<span>Events</span>
+								<img src="{{ MEDIA_URL }}/img/events_white.png" height="60">
+							</div>
+						</a>
+
+						<a href="/trips/qro/">
+							<div id="trips" class="menu-item">
+								<span>Trips</span>
+								<img src="{{ MEDIA_URL }}/img/trips_white.png" height="60">
+							</div>
+						</a>
+
+						<a target="_blank" href="https://www.facebook.com/ise.monterrey/photos_stream">
+							<div id="gallery" class="menu-item item-right">
+								<span>Gallery</span>
+								<img src="{{ MEDIA_URL }}/img/gallery_white.png" height="60">
+							</div>			
+						</a>
+					</div>
+				</div>
+				<div class="menu menu-mobile visible-xs-block visible-sm-block">
+					<div class="text-center">
+						<img id="menu-logo-mobile" src="/media/img/logo.png">
+					</div>
+					<div class="items-mobile">
+						<a href="/housing/">
+							<div id="housing" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/housing_white.png" height="60">
+								<span>Housing</span>
+							</div>
+						</a>
+						<a href="/airport/">
+							<div id="airport" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/airport_white.png" height="60">
+								<span>Airport Pickup</span>
+							</div>
+						</as>
+
+						<a href="/staff/">
+							<div id="staff" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/staff_white.png" height="60">
+								<span>Staff</span>
+							</div>
+						</a>
+
+						<a href="/events/">
+							<div id="events" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/events_white.png" height="60">
+								<span>Events</span>
+							</div>
+						</a>
+
+						<a href="/trips/">
+							<div id="trips" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/trips_white.png" height="60">
+								<span>Trips</span>
+							</div>
+						</a>
+
+						<a href="/gallery/">
+							<div id="gallery" class="menu-item item-mobile text-center">
+								<img src="{{ MEDIA_URL }}/img/gallery_white.png" height="60">
+								<span>Gallery</span>
+							</div>			
+						</a>
+					</div>
+				</div>
+
+				<div class="row text-center facebook-plugins">
+
+					<div class="col-md-6">
+						<h5 class="font-oswald">FACEBOOK NEWSFEED</h5>
+						<div class="fb-page" data-href="https://www.facebook.com/ise.queretaro" data-width="500" data-height="400" data-hide-cover="false" data-show-facepile="true" data-show-posts="true"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/ise.queretaro"><a href="https://www.facebook.com/ise.queretaro">ISE Queretaro</a></blockquote></div></div>
+					</div>
+					<div class="col-md-6">
+						<h5 class="font-oswald">UPCOMING EVENTS</h5>
+						<iframe src="//www.fanrx.com/facebook/events.php?theme=custom&page=ise.queretaro&bgcolor=ffffff&textcolor=000000&linkcolor=555555&max=5" width="500" height="300" frameborder="no" scrolling="auto"></iframe>
+					</div>
+
+
+				</div>
+			</div>
+{% endblock %}
+
+{% block footer %}
+			<footer>
+				<div class="text-center" style=" margin-left: 35px">
+					<div class="inline-block">
+						<a href="https://www.facebook.com/ise.monterrey/">
+							<img class="media-icon fb-icon" src="{{ MEDIA_URL }}img/facebook.gif">
+						</a>
+					</div>
+					<div class="inline-block">
+						<a href="//www.youtube.com/user/ISEMonterrey/videos">
+							<img class="media-icon yt-icon" src="{{ MEDIA_URL }}img/youtube.gif">
+						</a>
+					</div>
+				</div>
+			</footer>
+			{% include "aboutus.html" %}
+{% endblock %}
+
+

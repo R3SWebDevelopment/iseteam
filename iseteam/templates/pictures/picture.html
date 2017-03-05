@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+	<h1>UPLOAD PHOTO</h1>
+	<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+		{{ form.errors }}
+
+		{{ form }}
+
+		<input type="submit" value="save">
+	</form>
+</div>
+
+<div>
+<h1>120px</h1>
+{% for picture in pictures %}
+	<img src="{{ picture.picture.url_120x120 }}">
+{% endfor %}
+</div>
+
+<div>
+<h1>200px</h1>
+{% for picture in pictures %}
+	<img src="{{ picture.picture.url_200x200 }}">
+{% endfor %}
+</div>
+
+
+
+{% endblock %}

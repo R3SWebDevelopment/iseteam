@@ -1,0 +1,200 @@
+{% extends "staff/base.html" %}
+
+{% block title %}
+JOIN US | ISE | WE CARE
+{% endblock %}
+
+{% block metatags %}
+<meta property="og:image" content="http://isefamily.com/media/img/Join.jpg"/>
+<meta property="og:title" content="ISE Join us!!"/>
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.date.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.time.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}jqueryte/jquery-te-1.4.0.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+{% include "contact.html" %}
+{% include 'django_facebook/_facebook_js.html' %}
+<div class="main">
+	<div class="wrapper2" style="width:970px;margin-left:16px; {% if done %}height:2400px{% else %}height:2250px{% endif %}">
+
+	<div class="text-center">
+		<img class="housing-image" src="{{ MEDIA_URL }}img/Join.jpg">
+	</div>
+
+	{% if done %}
+	<div class="alert alert-success alert-dismissable">
+	  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <div class="text-center">
+      <h3>THANKS FOR YOUR INFORMATION!</h3>  
+    </div>
+	  <h6>WE WILL LOVE TO CONTACT YOU. BE SURE TO CHECK YOUR E-MAIL FOR FURTHER INFORMATION</h6>
+	</div>
+	{% endif %}
+
+  {% if form.errors %}
+  <div class="alert alert-danger alert-dismissable">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <div class="text-center">
+      <h3>THIS FORM CONTAINS ERRORS!</h3>  
+    </div>
+    <h6 class="text-center">PLEASE BE SURE TO HAVE FILLED UP ALL REQUIRED FIELDS</h6>
+  </div>
+  {% endif %}
+
+    <h2 class="font-oswald">JOIN US!!</h2>
+
+    <h4 class="font-oswald">ARE YOU READY TO TAKE THE FIRST STEP INTO THE BEST DECISION OF YOUR LIFE?</h4>
+    <h4 class="font-oswald">ARE YOU DOING WHAT MAKES YOU HAPPY? WANNA START?</h4>
+    <h5 class="font-oswald text-right">BEST OF LUCK!</h5>
+
+		<form id="joinUsForm"  action="" method="POST" enctype="multipart/form-data" style="margin-top:20px">{% csrf_token %}
+      <div class="row">
+        <div class="col-md-12">
+
+<div class="text-center">
+  <h5 class="font-oswald">Give us your basic info</h5>
+</div>
+
+<div class="row col-md-12">
+         <div class="col-md-4">
+            <label>Name:</label>
+            {{ form.name }}
+            {{ form.name.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Facebook URL:</label>
+            {{ form.fb }}
+            {{ form.fb.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Email:</label>
+            {{ form.email }}
+            {{ form.email.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Mobile:</label>
+            {{ form.mobile }}
+            {{ form.mobile.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Nationality:</label>
+            {{ form.nationality }}
+            {{ form.nationality.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Age:</label>
+            {{ form.age }}
+            {{ form.age.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Gender:</label>
+            {{ form.gender }}
+            {{ form.gender.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>Occupation:</label>
+            {{ form.occupation }}
+            {{ form.occupation.errors }}
+          </div>
+          <div class="col-md-4">
+            <label>School:</label>
+            {{ form.school }}
+            {{ form.school.errors }}
+          </div>
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <label>Languages:</label>
+            {{ form.languages }}
+            {{ form.languages.errors }}
+          </div>
+
+</div>
+
+</br>
+<div class="text-center">
+  <h5 class="font-oswald">Please fill out all fields</h5>
+</div>
+
+          <div class="col-md-12 margin30">
+            <label>1. What is the worst thing you have ever done?</label>
+            {{ form.question1 }}
+            {{ form.question1.errors }}
+
+          </div>
+          <div class="col-md-12 margin30">
+            <label>2. What do you consider yourself to be?</label>
+            {{ form.question2 }}
+            {{ form.question2.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>3. Choose from the quotes below and explain why:</label>
+            {{ form.question3 }}
+            {{ form.question3.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>4. Explain what makes you unique and valuable to our family.</label>
+            {{ form.question4 }}
+            {{ form.question4.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>5. What would you prefer?</label>
+            {{ form.question5 }}
+            {{ form.question5.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>6. Do you like trying new things?</label>
+            {{ form.question6 }}
+            {{ form.question6.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>7. Choose one:</label>
+            {{ form.question7 }}
+            {{ form.question7.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>8. Choose from the phrases below, the one that best describes your work style or the work style that you would like to develop:</label>
+            {{ form.question8 }}
+            {{ form.question8.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>9. Select the quote that resonates most within your personality.</label>
+            {{ form.question9 }}
+            {{ form.question9.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>10.  Which sentence best describes your personality:</label>
+            {{ form.question10 }}
+            {{ form.question10.errors }}
+          </div>
+          <div class="col-md-12 margin30">
+            <label>11.  What’s the weirdest thing you can think of right now?</label>
+            {{ form.question11 }}
+            {{ form.question11.errors }}
+          </div>
+        </div>
+      </div>
+
+
+
+              <div class="text-center">
+                <input class="btn btn-lg btn-info" type="submit" value="SUBMIT">
+              </div>
+
+		</form>
+	</div>
+</div>
+{% endblock %}

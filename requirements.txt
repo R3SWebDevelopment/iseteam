@@ -1,0 +1,11 @@
+Django==1.8.2
+Pillow==2.9.0
+dj-database-url==0.2.1
+psycopg2
+gunicorn==0.14.6
+django-storages
+boto==2.8.0
+django-facebook==6.0.3
+django-autoslug
+stripe
+conekta
