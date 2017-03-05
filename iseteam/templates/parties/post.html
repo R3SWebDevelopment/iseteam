@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+	<h1>UPLOAD PARTY</h1>
+	<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+		{{ form.errors }}
+
+		{{ form }}
+
+		<input type="submit" value="save">
+	</form>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+#, Name, Last name, Email, University, Age, Gender, Country, Payment method, Date, Status, STAFF, Confirmation Code
+
+{% for row in data %}
+	{{ row.0 }},{{ row.1|addslashes }},{{ row.2|addslashes }},{{ row.3|addslashes }},{{ row.4|addslashes }},{{ row.5|addslashes }},{{ row.6|addslashes }},{{ row.7|addslashes }},{{ row.8|addslashes }},{{ row.9}},{{ row.10|addslashes }},{{ row.11|addslashes }},{{ row.12|upper }}
+{% endfor %}
+
+

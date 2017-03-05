@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css" />
+  <link rel="icon" href="{{ MEDIA_URL }}img/logo.ico" type="image/x-icon"/>
+  <meta name="earnify-site-verification" content="061a1edc697ac377b92f8d3e57955b17384486c7" />
+  {% block css %}
+  {% endblock%}
+  <script type="text/javascript" src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+  {% block scripts %}
+  {% endblock %}
+</head>
+<body>
+  <div class="container">
+    {% block content %}
+    {% endblock %}
+  </div>
+
+  {% block footer %}
+  {% endblock %}
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-26190176-13', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>

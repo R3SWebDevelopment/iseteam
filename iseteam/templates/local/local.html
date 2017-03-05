@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Local Events</h1>
+
+{% for event in local %}
+	<div>
+		<a href="{{ event.get_url }}">{{ event }}</a>
+	</div>
+{% endfor %}
+
+{% endblock %}

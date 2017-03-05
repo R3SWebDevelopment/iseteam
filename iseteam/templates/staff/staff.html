@@ -1,0 +1,80 @@
+{% extends "staff/base.html" %}
+
+{% block title %}
+MEET YOUR STAFF | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+	<h1 class="font-oswald" style="font-size:80px;margin:20px 0px;">MEET YOUR STAFF</h1>
+</div>
+<div>
+	<div style="width:970px; position:relative; left:85px" class="text-center">
+	{% for staff in members %}
+		<div class="wrapper2 text-center inline-block" style="width:220px;height:318px;margin:10px">
+			<div>
+				<a href="#" data-toggle="modal" data-target="#staff-{{staff.pk}}">
+					<img style="width:180px;height:200px" src="{{ staff.photo.url }}">
+				</a>
+			</div>
+			<div style="position:relative;top:10px">
+				<a href="#" data-toggle="modal" data-target="#staff-{{staff.pk}}">
+					<h4 style="font-size:23px" class="font-gochi color-black">{{ staff.name|upper|truncatechars:30 }}</h4>
+				</a>
+			</div>
+		</div>
+	{% endfor %}
+	</div>
+	<!-- START MODAL -->
+
+	<!-- END MODAL -->
+
+
+	<!-- Button trigger modal -->
+
+<!-- START MODAL AREA -->
+
+{% for staff in members %}
+<div class="modal fade" id="staff-{{staff.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+      <div class="modal-body">
+      	<div class="text-center font-gochi">
+      		<div>
+	      		<img style="width:360px;height:400px" src="{{ staff.photo.url }}">
+	      		<h3 class="font-gochi">{{ staff.name }}</h3>
+	      		<h4 class="font-gochi">{{ staff.position }}</h4>
+      		</div>
+      		<div class="text-left">
+	      		<p class="font20">
+	      			{{ staff.age}} years</br>
+	      			{{ staff.carrer }} at {{ staff.school }}</br>
+	      			Born in {{ staff.hometown }}</br>
+	      			Phone: {{ staff.phone }}</br>
+	      			Email: <a href="mailto:{{ staff.email }}">{{staff.email }}</a></br>
+	      			Facebook: <a href="{{ staff.facebook }}" target="_blank">{{ staff.facebook }}	</a>
+	      		</p>
+      		</div>
+
+      	</div>
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endfor %}
+<!-- END MODALAREA -->
+
+</div>
+{% endblock %}

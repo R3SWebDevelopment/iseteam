@@ -1,0 +1,47 @@
+{% extends "events/base.html" %}
+
+{% block title %}
+EVENTS | ISE | WE CARE
+{% endblock %}
+
+{% block content %}
+        <div class="main">
+          <div class="text-right" style="position:relative;left:-16px;margin-bottom:30px">
+            <a href="#">
+              <img src="{{ MEDIA_URL }}img/hotel.png">
+            </a>
+            <a href="#">
+              <img src="{{ MEDIA_URL }}img/bus.png" style="position:relative;top:1px">
+            </a>
+          </div>
+          <div class="wrapper2 event-container">
+          {% for event in events %}
+          <div class="font-oswald" style="margin-bottom:40px">
+            <div class="event-description inline-block">
+              <div>
+                <div class="inline-block" style="width:250px">
+                  <a href="{{ event.get_absolute_url }}">
+                    <span style="font-size:30px">{{ event.name|upper }}</span>
+                  </a>
+                </div>
+                <div class="inline-block">
+                  <span style="font-size:18px;margin-left:10px;">{{ event.date|upper }}</span>
+                </div>
+              </div>
+              <div>
+                <p style="text-align: justify;">
+                {{ event.brief|upper|truncatechars:200 }}
+                </p>
+                <a href="{{ event.get_absolute_url }}">[MORE INFO]</a>
+              </div>
+            </div>
+            <div class="event-cover inline-block">
+              <a href="{{ event.get_absolute_url }}">
+                <img width="530" src="{{ event.cover.url }}" class="wrapper2" style="padding:0px">
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+          </div>
+        </div>
+{% endblock %}

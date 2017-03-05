@@ -1,0 +1,108 @@
+<!-- Modal -->
+<div class="modal fade" id="payTripModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+	    <form id="payTripForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <div>
+	        	<h4 class="modal-title font-oswald" id="myModalLabel">
+					<img src="{{ MEDIA_URL }}/img/logo.png" width="100">
+	        		ENJOY THE EXPERIENCE.
+	        	</h4>
+	        </div>
+	      </div>
+	      <div class="modal-body">
+	        <div class="col-md-12">
+
+	        	
+			   	<div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Name</label>
+					   		<input type="text" class="form-control" name="name">
+				   		</div>
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Last Name</label>
+					   		<input type="text" class="form-control" name="last_name">
+				   		</div>
+			   		</div>
+			    </div>
+
+			    <div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Email</label>
+					   		<input type="text" class="form-control" name="email">
+				   		</div>
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">University</label>
+					   		<input type="text" class="form-control" name="university">
+				   		</div>
+			   		</div>
+			    </div>
+
+			   	<div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-4">
+					   		<label class="font-oswald">Age</label>
+					   		<input type="text" class="form-control" name="email">
+				   		</div>
+				   		<div class="col-md-4">
+					   		<label class="font-oswald">Gender</label>
+					   		<input type="text" class="form-control" name="university">
+				   		</div>
+				   		<div class="col-md-4">
+					   		<label class="font-oswald">Country</label>
+					   		<input type="text" class="form-control" name="university">
+				   		</div>
+			   		</div>
+			    </div>
+
+			    <div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-6">
+				   		</div>
+				   		<div class="col-md-6">
+				   		</div>
+			   		</div>
+
+			   		<div class="row">
+				   		<div class="col-md-6">
+				   		</div>
+				   		<div class="col-md-6">
+				   		</div>
+			   		</div>
+			    </div>
+
+
+			   	<div id="payTripMessage" class="alert alert-success alert-dismissable" style="display:none">
+				  <strong>CONGRATS.</strong>  
+				  <h4>We send a mail with all info about how you can pay this great trip.</h4>
+				</div>
+	      	</div>
+	      </div>
+
+	      <div class="modal-footer">
+	        <a href="#" id="payTripSubmit" class="btn btn-primary">SUBMIT</a>
+	      </div>
+	      <script type="text/javascript">
+				$("#payTripSubmit").click(function() {
+					$('#payTripMessage').fadeIn("slow");
+				    var url = "/trips/hotel/"; 
+				    $.ajax({
+				           type: "POST",
+				           url: url,
+				           data: $("#hotelForm").serialize(),
+				           success: function(json)
+				           {
+				               console.log(json.done);
+				           }
+				         });
+				    return false; 
+				});
+	      </script>
+	    </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

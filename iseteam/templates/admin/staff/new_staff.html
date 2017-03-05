@@ -1,0 +1,152 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+New Staff Member
+{% endblock %}
+
+{% block css %}
+
+
+
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="content">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Staff</p>
+            </li>
+            <li><a href="#" class="active">New Staff Member</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ MEDIA_URL }}img/covers/cover1.jpg" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-heading">
+                    <div class="panel-title">Hire a new Staff
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <h3>With this tool, you will be able to hire New Staff Members and Family.</h3>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="row">
+      <div class="col-md-6 col-md-offset-3">
+
+
+        <div class="panel panel-transparent">
+          <div class="panel-body">
+            <h4>Please fill in all fields.</h4>
+            <form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+              <div class="row clearfix">
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>Username</label>
+                    {{ form.username }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.username.errors }}</label>
+                </div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>First Name</label>
+                    {{ form.first_name }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.first_name.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>Last Name</label>
+                    {{ form.last_name }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.last_name.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>Password</label>
+                    {{ form.password }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.password.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>Superuser?</label>
+                    {{ form.is_superuser }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.is_superuser.errors }}</label>
+                </div>
+              </div>
+
+
+              <div class="text-center">
+                <input class="btn btn-success btn-lg btn-larger" type="submit" value="Upload Now">
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+
+
+{% endblock %}

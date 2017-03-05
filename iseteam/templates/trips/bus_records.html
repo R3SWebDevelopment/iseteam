@@ -1,0 +1,58 @@
+{% extends "trips/base.html" %}
+
+{% block title %}
+RECORDS ON BUSES | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="main">
+    <div class="wrapper2" style="width:970px;margin-left:16px;">
+
+        <div class="text-center">
+            <img class="housing-image" src="{{ trip.cover.url }}">
+        </div>
+        <div class="text-center">
+            <h3>{{ trip.name }}</h3>
+        	<h4 class="font-oswald">BUSES</h4>
+
+        	<a class="btn btn-lg btn-warning margin20" href="/trips/{{ trip.pk }}/busesexcel/">Export to Excel</a>
+
+            {% for bus in buses %}
+
+                <h1>{{ bus.bus }}</h1>
+                <table class="table table-hover text-left" style="margin-top:30px">
+                    <thead>
+                    <tr class="warning">
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Confirmation Code</th>
+                        <th>Record Date</th>
+                    </thead>
+                    <tbody>
+                    {% for seat in bus.seats %}
+                      <tr>
+                        <td>{{ forloop.counter}}</td>
+                        <td>{{ seat.name|title }} {{ seat.last_name|title }}</td>
+                        <td>{{ seat.confirmation }}</td>
+                        <td>{{ seat.timestamp}}</td>
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            {% endfor %}
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

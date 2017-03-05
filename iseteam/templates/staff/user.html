@@ -1,0 +1,13 @@
+
+
+    <form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+        {{ form }}
+
+        {{ form.errors }}
+    	<div class="text-align-center">
+    		<input class="btn btn-lg btn-success" type="submit" value="Upload Now">
+    	</div>
+
+  </form>
+

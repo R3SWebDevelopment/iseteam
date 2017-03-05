@@ -1,0 +1,12 @@
+venv
+*.pyc
+*.pyo
+*~
+localsettings.py
+iseteam/media/images/facebook_profiles/
+iseteam/media/trips/trip/
+iseteam/media/events/event/
+iseteam/media/staff/staff/
+iseteam/trips/migrations/
+iseteam/photos/
+\#*

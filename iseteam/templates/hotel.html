@@ -1,0 +1,120 @@
+<!-- Modal -->
+<div class="modal fade" id="hotelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+	    <form id="hotelForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <div>
+	        	<h4 class="modal-title font-oswald" id="myModalLabel">
+					<img src="{{ MEDIA_URL }}/img/logo.png" width="100">
+	        		HOTEL CHECK-IN
+	        	</h4>
+	        </div>
+	      </div>
+	      <div class="modal-body">
+	        <div class="col-md-12">
+
+	       	<script type="text/javascript">
+		        $(document).on('ready', function(){
+		        	$('#select-trip').load('/trips/html/');
+
+		        	$('#select-trip').on('change', function(){
+		        		$('#hotelMessage').hide();
+				    	$('#errorMessage2').hide();
+		      			val = $(this).val();
+		      			$('#select-room').load('/trips/rooms/' + val);
+		      			$('#roomContainer').fadeIn("slow");
+
+		      		})
+		        })
+	        </script>
+
+	        <div>
+	        	<b>PLEASE SELECT THE ROOM YOU WOULD LIKE TO CHECK-IN TO.</b><br>
+
+	        	<b> WHEN THE ROOM IS COMPLETE YOU WILL RECEIVE AN EMAIL WITH YOUR ROOM NUMBER AND THE NAMES OF YOUR ROOMMATES.</b>
+
+	        </div>	
+
+			<div class="row block-form">
+				<h4>Trip</h4>
+				<select id='select-trip' class='form-control' name='trip'>
+				</select>
+			</div>
+
+			<div id="roomContainer" style="display:none">
+			   	<div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-12">
+					   		<label class="font-oswald">Confirmation Number</label>
+					   		<input id="confirmationNumber" type="text" class="form-control" name="confirmation" required>
+				   		</div>
+				   		<div class="col-md-12">
+					   		<label class="font-oswald">Choose your room</label>
+							<select id='select-room' class='form-control' name='room'>
+							</select>
+				   		</div>
+			   		</div>
+			    </div>
+
+			    <p id="fillMessage2">
+			    	*Please fill out all required fields.</br>
+			    	*Confirmation field in uppercase.
+			    </p>
+
+			    <div class="alert alert-danger alert-dismissable">
+			    	<p style="font-size:20px;font-weight: bold;">By following this step you're accepting our Safety Release and Cancellation Policy</p>
+			    	<p>Read this document at <a target="_blank" href="https://s3-us-west-2.amazonaws.com/isemonterrey/Safety-Release-and-Cancellation-Policy.pdf">HERE</a></p>
+			    </div>
+			</div>
+
+
+				<div id="errorMessage2" class="alert alert-danger alert-dismissable" style="display:none">
+				  <strong>SORRY.</strong>  
+				  <h4>Your confirmation code is not valid, try again.</h4>
+				</div>
+
+		   	<div id="hotelMessage" class="alert alert-success alert-dismissable" style="display:none">
+			  <strong>CONGRATS.</strong>  
+			  <h4 id="doneMessage"></h4>
+			</div>
+
+	      </div>
+	      </div>
+
+	      <div class="modal-footer">
+	        <a href="#" id="hotelSubmit" class="btn btn-primary">SUBMIT</a>
+	      </div>
+	      <script type="text/javascript">
+				$("#hotelSubmit").click(function() {
+					$('#hotelMessage').hide();
+				    $('#errorMessage2').hide();
+					var tripID = $('#select-trip').val()
+					var confirmation = $('#confirmationNumber').val()
+					var roomID = $('#select-room').val()
+				    var url = "/trips/hotel/" + tripID + "/" + confirmation + "/" + roomID; 
+				    $.ajax({
+				           dataType: "json",
+				           url: url,
+				           success: function(json)
+				           {
+				        		$('#hotelForm')[0].reset();
+				        		$('#roomContainer').fadeOut("slow");
+				               console.log(json.done);
+				               if (json.done == 'yes'){
+				               	$('#doneMessage').text(json.fullname + '! You have successfully checked-in in a room ' + json.room + '! once your room is completely reserved you will receive a confirmation e-mail to all room participants. ' )  
+				               	$('#hotelMessage').fadeIn("slow");
+				               }
+				               else{
+				               	$('#errorMessage2').fadeIn("slow");
+				               }
+				           }
+				         });
+				    return false; 
+				});
+	      </script>
+	    </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

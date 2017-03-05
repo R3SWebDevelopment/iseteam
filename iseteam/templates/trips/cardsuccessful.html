@@ -1,0 +1,78 @@
+{% extends "trips/base.html" %}
+
+{% block title %}
+SUCCESSFUL PAYMENT | ISE | WE CARE
+{% endblock %}
+
+{% block content %}
+
+<div class="main">
+  <div class="wrapper2" style="width:970px;margin-left:16px;">
+
+    <div class="text-center">
+      <img class="housing-image" src="{{ trip.cover.url }}">
+    </div>
+
+    <div class="text-center" style="padding:20px">
+      <h1 class="font-oswald">CONGRATULATIONS!!</h1>
+      <h3>You've successfully completed your payment</h3>
+      <p>We've sent to {{ confirmation.payment.email }} a copy of this confirmation.</p>
+      <p>With your Confirmation Number you will be able to do check-in for buses and rooms.</p>
+      <h2>CONFIRMATION NUMBER: {{ confirmation.code }} </h2>
+    </div>
+
+    <div>
+
+    <table cellspacing="0" cellpadding="0" border="0" width="600">
+      <tr>
+        <td width="200"></td>
+        <td width="200">
+          <b>YOUR NAME:</b>
+        </td>
+        <td width="200">
+          {{ confirmation.payment.name|upper }} {{ confirmation.payment.last_name|upper }}
+        </td>
+      </tr>
+      <tr>
+        <td width="200"></td>
+        <td width="200">
+          <b>TRIP:</b>
+        </td>
+        <td width="200">
+          {{ confirmation.payment.trip.name|upper }}
+        </td>
+      </tr>
+      <tr>
+        <td width="200"></td>
+        <td width="200">
+          <b>TOTAL PAID:</b>
+        </td>
+        <td width="200">
+          $ {{ confirmation.payment.trip.price_sale }} 
+        </td>
+      </tr>
+      <tr>
+        <td width="200"></td>
+        <td width="200">
+          <b>STATUS:</b>
+        </td>
+        <td width="200">
+          PAID
+        </td>
+      </tr>
+      <tr>
+        <td width="200"></td>
+        <td width="200">
+          <b>TRIP DATE:</b>
+        </td>
+        <td width="200">
+          {{ confirmation.payment.trip.date|upper }}
+        </td>
+      </tr>
+    </table>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+<header id="top-bar">
+
+  <div class="main-col">
+
+    <div class="site-title">
+      <a href="/">
+        <img class="logo" src="{{ MEDIA_URL }}img/header-logo.png" alt="">
+        <span class="site-title-text">International Student Embassy</span>
+      </a>
+    </div>
+
+    <div class="entry">
+    	{% if not user.is_authenticated %}
+
+      	<form action="{% url facebook_connect %}?facebook_login=1" method="post">{% csrf_token %}
+
+			
+			<a href="javascript:void(0);" onclick="F.connect(this.parentNode);"><span class="sign-up">Sign Up</span>
+			</a>
+
+			<input type="hidden" value="{{ request.path }}" name="next" />
+			<input type="hidden" value="{{ request.path }}" name="register_next" />
+			<input type="hidden" value="{{ request.path }}" name="error_next" />
+		</form>
+
+      	{% else %}
+        <div>
+          <div style="vertical-align:middle; display:inline-block">
+            <img style="border-radius:100px" src="http://graph.facebook.com/{{ user.facebookprofile.facebook_id }}/picture?type=square">
+          </div>
+          <div style="vertical-align:middle; display:inline-block">
+            <span class="sign-up"><a href="https://twitter.com/signup">{{ user.get_full_name }}</a></span>
+          </div>
+        </div>
+      	{% endif %}
+    </div>
+
+    <a href="#menu" class="menu-button">Menu</a>
+
+  </div>
+</header>

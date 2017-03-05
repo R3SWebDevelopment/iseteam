@@ -1,0 +1,59 @@
+{% extends "housing/base.html" %}
+
+{% block title %}
+HOUSING RECORDS | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+	<h2 class="font-oswald">HOUSING RECORDS</h2>
+
+	<a class="btn btn-lg btn-warning" href="#">Export to Excel</a>
+
+	<table class="table table-hover text-left">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Last Name</th>
+            <th>Country</th>
+            <th>Email</th>
+            <th>University</th>
+            <th>People</th>
+            <th>Time to stay</th>
+            <th>Date to arrival</th>
+            <th>Amount willing to pay</th>
+            <th>Live with</th>
+            <th>Comments</th>
+          </tr>
+        </thead>
+        <tbody>
+        	{% for record in records %}
+          <tr>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ record.name }}</td>
+            <td>{{ record.last_name }}</td>
+            <td>{{ record.country }}</td>
+        	<td><a href="mailto:{{ record.email }}">{{ record.email }}</a></td>
+        	<td>{{ record.university }}</td>
+        	<td>{{ record.people }}</td>
+        	<td>{{ record.time_of_stay }}</td>
+        	<td>{{ record.date_arrival }}</td>
+        	<td>{{ record.amount_pay }}</td>
+        	<td>{{ record.live_with }}</td>
+        	<td>{{ record.comments }}</td>
+          </tr>
+          	{% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

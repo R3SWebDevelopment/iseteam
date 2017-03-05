@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Request Airport Pickup Here!! 
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.date.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.time.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.date.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.time.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/legacy.js"></script>
+<script type="text/javascript">
+$(document).on('ready',function(){
+  $('.datepicker').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit: 'dd/mm/yyyy',
+    hiddenSuffix: '--submit'
+  });
+  $('.timepicker').pickatime({
+    format: 'HH:i',
+    formatLabel: '<b>h</b>:i <!i>a</!i>',
+    formatSubmit: 'HH:i',
+    hiddenSuffix: '--submit'
+  });
+})
+
+</script>
+{% endblock %}
+
+{% block content %}
+<body class="trends-page en">
+
+	{% include "header.html" %}
+
+<header id="page-header">
+  <div class="main-col">
+    <div id="menu">
+      <ul class="site-nav clearfix">
+        <li class="nav-golden"><a href="/trips/">Trips</a></li>
+        <li class="nav-pulse"><a href="/events/">Events</a></li>
+        <li class="nav-only"><a href="/housing/">Housing</a></li>
+        <li class="nav-trends"><a href="/airport/request">Airport Pickup</a></li>
+        <li class="nav-voices"><a href="#">Gallery</a></li>
+        <li class="nav-my"><a href="#">Contact</a></li>
+      </ul>
+    </div>    
+    <div id="desktop-nav">
+      <ul class="site-nav clearfix">
+        <li class="nav-golden"><a href="/trips/">Trips</a></li>
+        <li class="nav-pulse"><a href="/events/">Events</a></li>
+        <li class="nav-only"><a href="/housing/">Housing</a></li>
+        <li class="nav-trends"><a href="/airport/request">Airport Pickup</a></li>
+        <li class="nav-voices"><a href="#">Gallery</a></li>
+        <li class="nav-voices"><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <h1 id="page-title">Request Airport Pickup</h1>
+  </div>
+</header>
+
+<div id="content" class="clearfix">
+
+<div class="main-col">
+
+<div class="text-align-center">
+
+    <form class="margin20" method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+      <label>Date and Time </label>
+
+      {{ form.date }}
+      {{ form.date.errors }}
+
+
+      {{ form.time }}
+      {{ form.time.errors }}
+
+      <label>Your flight</label>
+
+      {{ form.airline }}
+      {{ form.airline.errors }}
+
+      {{ form.flight_number }}
+      {{ form.flight_number.errors }}
+
+      <label>Number of people</label>
+
+      {{ form.quantity }}
+      {{ form.quantity.errors }}
+
+      <label>Details about your flight</label>
+
+      {{ form.details }}
+      {{ form.details.errors }}
+
+      <input class="button-blue" type="submit" value="Request Now">
+
+  </form>
+
+</div>
+
+</div>
+
+</div> 
+
+	{% include "footer.html" %}
+</body>
+
+{% endblock %}

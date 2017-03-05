@@ -1,0 +1,13 @@
+<h1>Hi STAFF</h1>
+
+<p>Someone has purchased a trip.</p>
+
+<p><strong>Name:</strong>{{ pay.name}} {{ pay.last_name}}</p>
+<p><strong>Country:</strong>{{ pay.country }}</p>
+<p><strong>Email:</strong>{{ pay.email }}</p>
+	
+<p>You can check all records of payments here, only click the next link.</p>
+
+<a href="{{ pay.get_payment_records }}">GO TO PAYMENT RECORDS</a>
+
+

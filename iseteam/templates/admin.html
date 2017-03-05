@@ -1,0 +1,70 @@
+{% extends "base-index.html" %}
+
+{% block title %}
+	International Student Embassy|Welcome|We Care
+{% endblock %}
+
+{% block css %}
+	<link href='//fonts.googleapis.com/css?family=Archivo+Narrow:700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+	<link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block content %}
+<div class="menu wrapper2" style="margin-top:0px">
+
+	<div class="text-center">
+		<div>
+			<a class="font-oswald" href="/logout">LOG OUT - </a>
+			<a class="font-oswald" href="/">HOME</a>
+		</div>
+		<img src="{{ MEDIA_URL }}img/logo.png" width="300px">
+	</div>
+
+	<div id="housing" class="menu-item item-left" style="width:500px;margin:10px auto">
+		<a href="/housing/records">
+			<img src="/media//img/housing_white.png" height="60">
+			<span>Housing Records</span>
+		</a>
+	</div>
+
+
+	<div id="airport" class="menu-item item-left" style="width:500px;margin-left:0px;margin:10px auto">
+		<a href="/airport/records">
+			<img src="/media//img/airport_white.png" height="60">
+			<span>Airport Records</span>
+		</a>
+	</div>
+
+	<div class="text-center">
+		<h1>OUR TRIPS</h1>
+	</div>
+
+	<table class="table table-hover text-left">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Trip Name</th>
+            <th>Payments</th>
+            <th>Hotel</th>
+            <th>Bus</th>
+          </tr>
+        </thead>
+        <tbody>
+        	{% for trip in trips %}
+          <tr>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ trip.name }}</td>
+            <td><a class="font-oswald" href="/trips/{{ trip.pk }}/payments/">GO</a></td>
+            <td><a class="font-oswald" href="/trips/{{ trip.pk }}/hotel/">GO</a></td>
+            <td><a class="font-oswald" href="/trips/{{ trip.pk }}/buses/">GO</a></td>
+          </tr>
+          	{% endfor %}
+        </tbody>
+    </table>
+
+</div>
+
+
+{% endblock %}

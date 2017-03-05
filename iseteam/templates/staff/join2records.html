@@ -1,0 +1,141 @@
+{% extends "staff/base.html" %}
+
+{% block title %}
+JOIN US RECORDS| ISE | WE CARE
+{% endblock %}|
+
+{% block metatags %}
+<meta property="og:image" content="http://isefamily.com/media/img/Join.jpg"/>
+<meta property="og:title" content="ISE Join us!!"/>
+
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.date.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.time.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}jqueryte/jquery-te-1.4.0.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+{% include "contact.html" %}
+{% include 'django_facebook/_facebook_js.html' %}
+<div class="main">
+	<div class="wrapper2" style="width:970px;margin-left:16px;">
+    {% for a in records %}
+    <div class="col-md-12 border-request">
+      <div class="row text-center">
+        <label class="font-oswald">Application Date:</label> {{ a.timestamp }} | 
+        <label class="font-oswald">Grade by closed questions:</label> {{ a.points}} / 6
+      </div>
+      <div class="row">
+         <div class="col-md-4">
+            <label class="font-oswald">Name:</label>
+            {{ a.name }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Facebook URL:</label>
+            <a href="{{ a.fb }}">{{ a.fb }}</a>
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Mobile:</label>
+            {{ a.mobile }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Email:</label>
+            {{ a.email }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">His/Her Country:</label>
+            {{ a.nationality }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Age:</label>
+            {{ a.age }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Gender:</label>
+            {{ a.gender }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Occupation:</label>
+            {{ a.occupation }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">School:</label>
+            {{ a.school }}
+          </div>
+          <div class="col-md-4">
+            <label class="font-oswald">Languages:</label>
+            {{ a.languages }}
+          </div>
+      </div>
+      <div class="row" style="background: rgb(238, 233, 233);">
+          <div class="col-md-6">
+            <label class="font-oswald">1. What is the worst thing you have ever done?</label>
+            {{ a.question11 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">2. Choose from the quotes below:</label>
+            {{ a.question12 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">3. Explain what makes you unique and valuable to our family.</label>
+            {{ a.question13 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">4. Choose one:</label>
+            {{ a.question14 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">5. Choose from the phrases below, the one that best describes your work style or the work style that you would like to develop:</label>
+            {{ a.question15 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">6. Select the quote that resonates most within your personality.</label>
+            {{ a.question16 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">7. Which sentence best describes your personality:</label>
+            {{ a.question17 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">8. For you what is ISE?</label>
+            {{ a.question18 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">9. Are you interested on meeting new people from other countries? Why?</label>
+            {{ a.question19 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">10.  If you where asked to create an original party what would  be theme and what will it include?</label>
+            {{ a.question20 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">11.  List five skills? And five weakness?</label>
+            {{ a.question21 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">12.  Have you been on an Exchange semester or have travelled outside Mexico? Tell us a bit about it.</label>
+            {{ a.question22 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">13.  Which are your favorite bars and clubs in the city?</label>
+            {{ a.question23 }}
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">14.  Do you have a car?</label>
+            {{ a.question24 }}
+          </div>
+
+      </div>
+    </div>
+    {% endfor %}
+	</div>
+</div>
+{% endblock %}

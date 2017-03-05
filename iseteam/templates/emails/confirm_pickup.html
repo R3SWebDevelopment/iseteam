@@ -1,0 +1,28 @@
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/pickup-confirmation.jpg">
+
+<h1>Dear {{ airport.name }}</h1>
+
+<p>Your request has been processed successfully.</p>
+
+<h2>Info Confirmation.</h2>
+
+<p><strong>Flight Number: </strong>{{ airport.flight_number }}</p>
+<p><strong>Airline: </strong>{{ airport.airline }}</p>
+<p><strong>Terminal: </strong>{{ airport.terminal }}</p>
+<p><strong>Number of people: </strong>{{ airport.people }}</p>
+<p><strong>Date: </strong>{{ airport.date }}</p>
+<p><strong>Time: </strong>{{ airport.time }}</p>
+<p><strong>Comments: </strong>{{ airport.comments }}</p>
+
+<h2>IMPORTANT!</h2>
+
+<p>The staff who will pick you up is below.</p>
+
+<p><strong>Name: </strong>{{ airport.attendant.get_full_name }}</p>
+
+<p>You can contact us via mail <a href="mailto:info@isefamily.com">info@isefamily.com</a></p>
+
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/jointheexperience.jpg">
+
+
+

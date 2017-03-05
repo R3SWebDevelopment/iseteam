@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Parties</h1>
+
+{% for party in parties %}
+	<div>
+		<a href="{{ party.get_url }}">{{ party }}</a>
+	</div>
+{% endfor %}
+
+{% endblock %}
