@@ -1,0 +1,55 @@
+{% extends "trips/base_toluca.html" %}
+
+{% block title %}
+TRIPS | ISE | WE CARE
+{% endblock %}
+
+{% block content %}
+        <div class="main">
+
+
+          <div class="text-right" style="position:relative;left:-16px;margin-bottom:30px">
+            <a href="#" data-toggle="modal" data-target="#hotelModal">
+              <img src="{{ MEDIA_URL }}img/hotel.png">
+            </a>
+            <a href="#" data-toggle="modal" data-target="#busModal">
+              <img src="{{ MEDIA_URL }}img/bus.png" style="position:relative;top:1px">
+            </a>
+          </div>
+
+
+          <div class="text-center">
+            <h2 class="font-oswald">Toluca</h2>
+          </div>
+
+          <div class="wrapper2 event-container">
+          {% for trip in trips %}
+          <div class="font-oswald" style="margin-bottom:40px">
+            <div class="event-description inline-block">
+              <div>
+                <div class="inline-block" style="width:250px">
+                  <a href="{{ trip.get_queretaro_url }}">
+                    <span style="font-size:30px">{{ trip.name|upper }}</span>
+                  </a>
+                </div>
+                <div class="inline-block">
+                  <span style="font-size:18px;margin-left:10px;">{{ trip.date|upper }}</span>
+                </div>
+              </div>
+              <div>
+                <p style="text-align: justify;">
+                {{ trip.brief|upper|truncatechars:200 }}
+                </p>
+                <a href="{{ trip.get_queretaro_url }}">[MORE INFO]</a>
+              </div>
+            </div>
+            <div class="event-cover inline-block">
+              <a href="{{ trip.get_queretaro_url }}">
+                <img width="530" src="{{ trip.cover.url }}" class="wrapper2" style="padding:0px">
+              </a>
+            </div>
+          </div>
+          {% endfor %}
+          </div>
+        </div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Upload a Staff
+{% endblock %}
+
+{% block content %}
+<body>
+
+<div class="col-lg-8">
+
+	<div class="margin10">
+		<h1 id="page-title">Upload a Staff</h1>
+	</div>
+
+    <form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+    	<div class="margin10">
+		{{ form.name }}
+		{{ form.name.errors }}
+    	</div>
+
+        <div class="margin10">
+        {{ form.position }}
+        {{ form.position.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.photo }}
+        {{ form.photo.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.age }}
+        {{ form.age.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.carrer }}
+        {{ form.carrer.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.school }}
+        {{ form.school.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.hometown }}
+        {{ form.homwtown.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.phone }}
+        {{ form.phone.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.email }}
+        {{ form.email.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.facebook }}
+        {{ form.facebook.errors }}
+        </div>
+
+    	<div class="text-align-center">
+    		<input class="btn btn-lg btn-success" type="submit" value="Upload Now">
+    	</div>
+
+  </form>
+
+</div>
+
+</body>
+
+{% endblock %}

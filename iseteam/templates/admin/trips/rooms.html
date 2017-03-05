@@ -1,0 +1,109 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+ROOM RECORDS | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+{% endblock %}
+{% block scripts %}
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="content">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Trips</p>
+            </li>
+            <li><a href="#" class="active">{{ trip }}</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ trip.cover.url }}" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-body">
+                    <h3>{{ trip }}</h3>
+                    <h4>Room Records</h4>
+                    <a class="btn btn-lg btn-warning" href="/trips/{{ trip.pk }}/hotelexcel/">Export to Excel</a>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+
+
+
+
+        <div class="col-md-8 col-md-offset-2">
+
+
+            {% for room in rooms %}
+
+            <h4>Room {{ room }}</h4>
+            <table class="table table-hover text-left" style="margin-top:30px">
+                <thead>
+                <tr class="warning">
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Last Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for roomate in room.roomates.all %}
+                  <tr>
+                    <td>{{ forloop.counter}}</td>
+                    <td>{{ roomate.payment.name }}</td>
+                    <td>{{ roomate.payment.last_name }}</td>
+                  </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% endfor %}
+        </div>
+
+
+
+
+    </div>
+
+
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+{% endblock %}
+
+

@@ -1,0 +1,90 @@
+<!-- BEGIN SIDEBAR MENU HEADER-->
+<div class="sidebar-header">
+  <img src="{{ MEDIA_URL }}img/logo.png" alt="logo" class="brand" data-src="{{ MEDIA_URL }}img/logo.png" data-src-retina="{{ MEDIA_URL }}img/logo.png" width="40" height="40">
+</div>
+<!-- END SIDEBAR MENU HEADER-->
+<!-- START SIDEBAR MENU -->
+<div class="sidebar-menu">
+  <!-- BEGIN SIDEBAR MENU ITEMS-->
+  <ul class="menu-items">
+    <li class="m-t-30 open">
+      <a href="javascript:;"><span class="title">Trips</span>
+      <span class=" arrow"></span></a>
+      <span class="icon-thumbnail">Tr</span>
+      <ul class="sub-menu">
+        <li class="">
+          <a href="/admin/trips/all-trips/">All Trips</a>
+          <span class="icon-thumbnail">At</span>
+        </li>
+        {% if user.is_superuser %}
+        <li class="">
+          <a href="/admin/trips/new-trip/">New Trip</a>
+          <span class="icon-thumbnail">Nt</span>
+        </li>
+        {% endif %}
+      </ul>
+    </li>
+    <li class="">
+      <a href="javascript:;"><span class="title">Events</span>
+      <span class=" arrow"></span></a>
+      <span class="icon-thumbnail">Ev</span>
+      <ul class="sub-menu">
+        <li class="">
+          <a href="/admin/events/all-events/">All Events</a>
+          <span class="icon-thumbnail">At</span>
+        </li>
+        {% if user.is_superuser %}
+        <li class="">
+          <a href="/admin/events/new-event/">New Event</a>
+          <span class="icon-thumbnail">Nt</span>
+        </li>
+        {% endif %}
+      </ul>
+    </li>
+    <li class="">
+      <a href="javascript:;"><span class="title">Staff</span>
+      <span class=" arrow"></span></a>
+      <span class="icon-thumbnail">St</span>
+      <ul class="sub-menu">
+        <li class="">
+          <a href="/admin/staff/all-staff/">All Staff</a>
+          <span class="icon-thumbnail">As</span>
+        </li>
+        {% if user.is_superuser %}
+        <li class="">
+          <a href="/admin/staff/new-staff/">New Staff Member</a>
+          <span class="icon-thumbnail">Nsm</span>
+        </li>
+        {% endif %}
+      </ul>
+    </li>
+    <li class="">
+      <a href="javascript:;"><span class="title">Airport</span>
+      <span class=" arrow"></span></a>
+      <span class="icon-thumbnail">Air</span>
+      <ul class="sub-menu">
+        <li class="">
+          <a href="/admin/pickup/mtyrecords/">MTY Records</a>
+          <span class="icon-thumbnail">MTY</span>
+        </li>
+        <li class="">
+          <a href="/admin/pickup/qrorecords/">QRO Records</a>
+          <span class="icon-thumbnail">QRO</span>
+        </li>
+      </ul>
+    </li>
+    <li class="">
+      <a href="javascript:;"><span class="title">Housing</span>
+      <span class=" arrow"></span></a>
+      <span class="icon-thumbnail">Hou</span>
+      <ul class="sub-menu">
+        <li class="">
+          <a href="/admin/housing/records/">See Records</a>
+          <span class="icon-thumbnail">Re</span>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <div class="clearfix"></div>
+</div>
+<!-- END SIDEBAR MENU -->

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>{% block title %}{% endblock %}</title>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/style.css">
+		<link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+		<link rel="icon" href="{{ MEDIA_URL }}img/logo.ico" type="image/x-icon"/>
+		{% block css %}
+		{% endblock %}
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+		{% block scripts %}
+		{% endblock %}
+	</head>
+	<body>
+	<div id="fb-root"></div>
+	<script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=433672563407144";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+	</script>
+		<div class="{% if not fullsize %}container{% endif %}">
+			<header>
+				<div class="text-align-center">
+					<div>
+						<a href="/">
+							<img class="header-logo" src="{{ MEDIA_URL }}img/header.png">
+						</a>
+					</div>
+				</div>
+				<div class="menu-section text-align-center">
+					<div class="inline-block large-icon-menu">
+						<a href="/trips/">
+							<img src="{{ MEDIA_URL }}img/trips-large.png">
+						</a>
+					</div>
+					<div class="inline-block small-icon-menu">
+						<a href="/events/">
+							<img src="{{ MEDIA_URL }}img/events.gif">
+						</a>
+					</div>
+					<div class="inline-block small-icon-menu">
+						<a href="/housing/">
+							<img src="{{ MEDIA_URL }}img/housing.gif">
+						</a>
+					</div>
+					<div class="inline-block small-icon-menu">
+						<a target="_blank" href="https://www.facebook.com/ise.monterrey/photos_stream">
+							<img src="{{ MEDIA_URL }}img/gallery.gif">
+						</a>
+					</div>
+					<div class="inline-block small-icon-menu">
+						<a href="/airport/">
+							<img src="{{ MEDIA_URL }}img/airport.gif">
+						</a>
+					</div>
+					<div class="inline-block small-icon-menu">
+						<a target="_blank" href="https://www.facebook.com/media/set/?set=a.831220423590306.1073741875.241299249249096&type=3">
+							<img src="{{ MEDIA_URL }}img/staff.gif">
+						</a>
+					</div>
+				</div>
+			</header>
+			<div class="content">
+				{% include "contact.html" %}
+				{% include "hotel.html" %}
+				{% include "bus.html" %}
+				{% block content %}
+				{% endblock %}
+			</div>
+{% include "aboutus.html" %}
+		</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-26190176-13', 'auto');
+  ga('send', 'pageview');
+
+</script>
+	</body>
+</html>

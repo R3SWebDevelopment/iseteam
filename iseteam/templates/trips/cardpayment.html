@@ -1,0 +1,161 @@
+{% extends "trips/base.html" %}
+
+{% block title %}
+TRIPS | ISE | WE CARE
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="main">
+  <div class="wrapper2" style="width:970px;margin-left:16px;">
+
+  <div class="text-center">
+    <img class="housing-image" src="{{ trip.cover.url }}">
+  </div>
+
+  <div class="text-center" style="padding:20px">
+    <h1 class="font-oswald">IT'S OUR SECURE WAY TO PAY BY CARD.</h1>
+  </div>
+
+  <div class="text-center" style="margin-bottom:40px">
+    <h4 class="font-oswald">WE ACCEPT</h4>
+    <img width="150" src="{{ MEDIA_URL }}img/visa_mastercard.png">
+    <p class="font-oswald" style="margin-top:20px">IMPORTANT:WE DON'T STORE YOUR CARD INFORMATION, WE ONLY PROCESS IT BY USING <a target="_b" href="https://www.stripe.com">STRIPE</a> AS PAYMENT PROCCESSOR</p>
+  </div>
+
+  <div class="col-md-12" id="card-form">
+
+    <div id="error_message"></div>
+
+    {% if error_message %}
+    <div class="error_message_backend">
+      <div class="alert alert-danger text-center" role="alert">
+          <h3>UPPSS! Something went wrong with you card.</h3>
+          <h4>{{ error_message }}</h4>
+          <p>Please try again. However, if you are still having problems with your card, NO WORRIES. We have recorded your attempt and generated a spot for you, a staff will contact you ASAP or write a email to info@isefamily.com</p>
+      </div>
+    </div>
+    {% endif %}
+
+    <form id="payment-form" action="" method="POST">{% csrf_token %}
+      <div class="row block-form">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <span class="payment-errors" style="color:red"></span>
+          </div>
+        </div>
+      </div>
+      <div class="row block-form">
+        <div class="row">
+          <div class="col-md-12">
+            <label class="font-oswald">Card Number</label>
+            <input data-stripe="number" class="form-control" type="text">
+          </div>
+        </div>
+      </div>
+
+      <div class="row block-form">
+        <div class="row">
+          <div class="col-md-6">
+            <label class="font-oswald">Expiry Month</label>
+            <select data-stripe="exp-month" class="form-control">
+              <option value="" selected="selected">Select a month</option>
+              <option value="01">01 - January</option>
+              <option value="02">02 - February</option>
+              <option value="03">03 - March</option>
+              <option value="04">04 - April</option>
+              <option value="05">05 - May</option>
+              <option value="06">06 - June</option>
+              <option value="07">07 - July</option>
+              <option value="08">08 - August</option>
+              <option value="09">09 - September</option>
+              <option value="10">10 - October</option>
+              <option value="11">11 - November</option>
+              <option value="12">12 - December</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="font-oswald">Expiry Year</label>
+            <select data-stripe="exp-year" class="form-control">
+              <option value="" selected="selected">Select a year</option>
+              <option value="2015">2015</option>
+              <option value="2016">2016</option>
+              <option value="2017">2017</option>
+              <option value="2018">2018</option>
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+            </select>    
+          </div>
+        </div>
+      </div>
+
+      <div class="row block-form">
+        <div class="row">
+          <div class="col-md-4 col-md-offset-4">
+            <label class="font-oswald">CVV</label>  
+            <input data-stripe="cvc" class="form-control" type="text">              
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-lg btn-info">PAY NOW</button>
+        <p class="font-oswald" style="margin-top:20px">THIS PAGE IS SECURE AND IT'S RUNNING OVER HTTPS PROTOCOL THAT MEANS ALL YOUR DATA IS ENCRYPTED BY 128 BITS</p>
+      </div>
+
+
+    </form>
+
+
+
+<script type="text/javascript">
+  // This identifies your website in the createToken call below
+  Stripe.setPublishableKey('pk_live_JARW2mXGPwjTIB536icUv3R0');
+
+  function stripeResponseHandler(status, response) {
+    var $form = $('#payment-form');
+
+    if (response.error) {
+      // Show the errors on the form
+      $form.find('.payment-errors').text(response.error.message);
+      $form.find('button').prop('disabled', false);
+    } else {
+      // response contains id and card, which contains additional card details
+      var token = response.id;
+      // Insert the token into the form so it gets submitted to the server
+      $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+      // and submit
+      $form.get(0).submit();
+    }
+  };
+
+  jQuery(function($) {
+    $('#payment-form').submit(function(event) {
+      console.log('yee')
+      var $form = $(this);
+
+      // Disable the submit button to prevent repeated clicks
+      $form.find('button').prop('disabled', true);
+
+      Stripe.card.createToken($form, stripeResponseHandler);
+
+      // Prevent the form from submitting with the default action
+      return false;
+    });
+  });
+
+</script>
+
+  </div>
+  </div>
+</div>
+{% endblock %}

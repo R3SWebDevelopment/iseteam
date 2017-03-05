@@ -1,0 +1,33 @@
+{% extends "gallery/base.html" %}
+
+{% block title %}
+Check out our amazing photos!
+{% endblock %}
+
+{% block content %}
+
+{% load thumbnail %}
+
+        <div class="main">
+          <div class="wrapper2 event-container">
+          {% for gallery in galleries %}
+          <div class="gallery-wrapper">
+            <a href="{{ gallery.get_absolute_url }}">
+              <h3 class="font-gochi font30 black2">{{ gallery.name }} - {{ gallery.year }}</h3>
+            </a>
+            <div class="thumbs-area">
+              {% for image in gallery.get_thumbs %}
+            
+              {% thumbnail image.file "100x100" crop="center" as im %}
+                <a href="{{ gallery.get_absolute_url }}">
+                  <img class="image-thumb" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                </a>
+              {% endthumbnail %}
+
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+          </div>
+        </div>
+{% endblock %}

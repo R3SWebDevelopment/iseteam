@@ -1,0 +1,127 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Pick-Up Records{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}
+
+{% block content %}
+
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="content">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Airport Pick-up</p>
+            </li>
+            <li><a href="#" class="active">Records</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ MEDIA_URL }}img/covers/cover1.jpg" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-body">
+                    <h2>Pick-up Records</h2>
+                    <a class="btn btn-lg btn-warning" href="#">Export to Excel</a>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+          <script type="text/javascript">
+                  $(document).on('ready', function(){
+                      $('.changeStatusToAttendant').click(function(e) {
+                          e.preventDefault();
+                          href = $(this).attr('href')
+                          name = $(this).attr('data-name')
+                          
+                          if(confirm('Are you sure you wanna pick up to ' + name)) {
+                              window.location = href;
+                          }
+                      });
+                  })
+          </script>
+
+          <table class="table table-hover text-left">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>City</th>
+                  <th>Name</th>
+                  <th>Last Name</th>
+                  <th>Country</th>
+                  <th>Email</th>
+                  <th>Flight Number</th>
+                  <th>Airline</th>
+                  <th>Terminal</th>
+                  <th># of people</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Attendant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for record in records %}
+                <tr>
+                  <td>{{ forloop.counter}}</td>
+                  <td>{{ record.city }}</td>
+                  <td>{{ record.name }}</td>
+                  <td>{{ record.last_name }}</td>
+                  <td>{{ record.country }}</td>
+                  <td><a href="mailto:{{ record.email }}">{{ record.email }}</a></td>
+                  <td>{{ record.flight_number }}</td>
+                  <td>{{ record.airline }}</td>
+                  <td>{{ record.terminal }}</td>
+                  <td>{{ record.people }}</td>
+                  <td>{{ record.date }}</td>
+                  <td>{{ record.time }}</td>
+                  <td>{% if record.attendant %}{{ record.attendant.get_full_name }}{% else %}<a class="changeStatusToAttendant btn btn-danger btn-sm" href="/airport/attendant/{{ record.pk }}" data-name="{{ record.name }} {{ record.last_name }}">Click to pick him/her up</a>{% endif %}</td>
+                </tr>
+                  {% endfor %}
+              </tbody>
+          </table>
+      </div>
+    </div>
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+
+{% endblock %}
+
+

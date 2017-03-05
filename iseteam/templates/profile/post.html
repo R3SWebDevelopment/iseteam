@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+	<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+		{{ form.errors }}
+		<label>country</label>
+		{{ form.country }}
+		<label>university</label>
+		{{ form.university }}
+		<label>start period</label>
+		{{ form.start_period }}
+		<label>end period</label>
+		{{ form.end_period }}
+		<input type="submit" value="save">
+	</form>
+</div>
+{% endblock %}

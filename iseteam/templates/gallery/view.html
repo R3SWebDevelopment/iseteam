@@ -1,0 +1,66 @@
+{% extends "gallery/base.html" %}
+
+{% block title %}
+Check out our amazing photos!
+{% endblock %}
+
+{% block content %}
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=433672563407144";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+{% load thumbnail %}
+
+        <div class="main">
+          <div class="wrapper2 event-container">
+            <div class="text-center">
+              <h2 class="font-gochi">{{ gallery.name }} - {{ gallery.year }}</h3>
+            </div>
+            <div>
+            {% for image in gallery.images.all %}
+
+              
+                {% thumbnail image.file "230x230" crop="center" as im %}
+                <a href="#" data-toggle="modal" data-target="#img-{{image.pk}}">
+                    <img class="image-thumb2" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                </a>
+                {% endthumbnail %}
+
+
+            {% endfor %}
+            </div>
+          </div>
+        </div>
+
+
+<!-- START MODAL AREA -->
+{% for image in gallery.images.all %}
+<div class="modal fade" id="img-{{image.pk}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-custom">
+    <div class="modal-content wrapper2">
+      <div class="modal-body">
+
+        <img width="728" src="{{ image.file.url }}" class="img-gallery">
+
+        <div class="text-center img-social-area">
+          <div class="fb-comments" data-href="{{ image.get_url }}" data-width="600" data-numposts="10" data-colorscheme="light"></div>
+          <div class="fb-like fb-likes" data-href="{{ path }}" data-width="300" data-layout="standard" data-action="like" data-show-faces="true" data-share="true"></div>
+        </div>
+
+        <div class="text-right">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+{% endfor %}
+<!-- END MODALAREA -->
+{% endblock %}

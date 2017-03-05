@@ -1,0 +1,123 @@
+{% extends "admin/base.html" %}
+
+{% block title %}All Trips{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block scripts %}{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript">
+$(document).on('ready', function(){
+    $('.delete-trip').click(function(e) {
+        e.preventDefault();
+        href = $(this).attr('href')
+        trip = $(this).attr('trip')
+        
+        if(confirm('Are you sure you wanna delete to ' + trip )) {
+            window.location = href;
+        }
+    });
+})
+</script>
+
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="content">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Buses</p>
+            </li>
+            <li><a href="#" class="active">All Trip</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ MEDIA_URL }}img/covers/cover1.jpg" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-heading">
+                    <div class="panel-title">See All Trips
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <h3>With this tool, you will be able to create, manage, edit and more for trips that will change people's life.</h3>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="row">
+    	<div class="col-md-10 col-md-offset-1">
+    		<h2>All Trips</h2>
+			<table class="table">
+		      <thead>
+		        <tr>
+		          <th>#</th>
+		          <th>Trip's Name</th>
+		          <th>Date</th>
+		          <th>Tools</th>
+		        </tr>
+		      </thead>
+		      <tbody>
+		      	{% for trip in trips %}
+		        <tr>
+		          <th scope="row">{{ forloop.counter }}</th>
+		          <td><a href="{{ trip.get_absolute_url }}">{{ trip.name }}</a></td>
+		          <td>{{ trip.date }}</td>
+		          <td>
+                {% if user.is_superuser %}
+		          	<a class="btn btn-success" href="/admin/trips/edit-trip/{{ trip.pk }}"><i class="fa fa-edit"></i> Edit</a>
+		          	<a trip="{{ trip.name|title }}" class="btn btn-danger delete-trip" href="/admin/trips/delete-trip/{{ trip.pk }}/"><i class="fa fa-trash"> Delete</i></a>
+                {% endif %}
+		          	<a class="btn btn-primary" href="/admin/trips/payments/{{ trip.pk }}/"><i class="fa fa-money"></i> Payments</a>
+		          	<a class="btn btn-complete" href="/admin/trips/rooms/{{ trip.pk }}/"><i class="fa fa-user"></i> Manage Rooms</a>
+		          	<a class="btn btn-success" href="/admin/trips/buses/{{ trip.pk }}/"><i class="fa fa-bus"></i> Manage Buses</a>
+		          </td>
+		        </tr>
+		        {% endfor %}
+		      </tbody>
+		    </table>
+    	</div>
+    </div>
+
+
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+
+{% endblock %}
+
+

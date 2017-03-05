@@ -1,0 +1,73 @@
+{% extends "airport/base.html" %}
+
+{% block title %}
+PICKUPS RECORDS | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="text-center">
+	<h2 class="font-oswald">PICKUP RECORDS</h2>
+
+	<a class="btn btn-lg btn-warning" href="#">Export to Excel</a>
+
+    <script type="text/javascript">
+            $(document).on('ready', function(){
+                $('.changeStatusToAttendant').click(function(e) {
+                    e.preventDefault();
+                    href = $(this).attr('href')
+                    name = $(this).attr('data-name')
+                    
+                    if(confirm('Are you sure you want pick up a ' + name)) {
+                        window.location = href;
+                    }
+                });
+            })
+    </script>
+
+	<table class="table table-hover text-left">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Last Name</th>
+            <th>Country</th>
+            <th>Email</th>
+            <th>Flight Number</th>
+            <th>Airline</th>
+            <th>Terminal</th>
+            <th># of people</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Attendant</th>
+          </tr>
+        </thead>
+        <tbody>
+        	{% for record in records %}
+          <tr>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ record.name }}</td>
+            <td>{{ record.last_name }}</td>
+            <td>{{ record.country }}</td>
+            <td><a href="mailto:{{ record.email }}">{{ record.email }}</a></td>
+            <td>{{ record.flight_number }}</td>
+            <td>{{ record.airline }}</td>
+            <td>{{ record.terminal }}</td>
+            <td>{{ record.people }}</td>
+            <td>{{ record.date }}</td>
+            <td>{{ record.time }}</td>
+            <td>{% if record.attendant %}{{ record.attendant.get_full_name }}{% else %}<a class="changeStatusToAttendant btn btn-danger btn-sm" href="/airport/attendant/{{ record.pk }}" data-name="{{ record.name }} {{ record.last_name }}">Empty</a>{% endif %}</td>
+          </tr>
+          	{% endfor %}
+        </tbody>
+    </table>
+
+</div>
+{% endblock %}

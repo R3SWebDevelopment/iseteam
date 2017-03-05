@@ -1,0 +1,104 @@
+Edit Trips Real Time
+
+-assign staff via ajax DONE
+
+-make the change y respond a json DONE
+ current_staff DONE
+-Hidden asign button DONE
+-Launch confirmation message: You have successfully assigned as staff(seller) to {{ staff}}, you can check out the history by clicking on See History
+DONE
+
+-chage status via ajax DIBE
+
+-make the change y respond a json DONE
+	confirmation number DONE
+-change button new status DONE
+-launch confirmation message: You have successfully changed the status to {{ client }} from {{ last status }} to {{ new status }}
+DONE
+
+Buy Ticket DONE
+
+-Agregar refered by (options and if its staff then launch a field to write the staff's name) DONE
+
+Admin
+
+-Comprar template en Themeforest con tarjeta de sebas DONE
+
+-Add/Edit/Delete Trip DONE
+-Add/Edit/Delete Trip DONE
+
+View Payments Hotel Bus per trip DONEN
+
+Activate/Desactivate Checkin bus checkin hotel
+
+Add Buses and change number of seats
+
+
+Conekta Metodo de Pago
+	Dar de alta en la plataforma y llenar Datos
+	Integrar
+
+
+Housing
+
+
+USer admin to edit, delete and create users
+
+
+
+
+
+
+
+
+
+
+ADMIN
+
+Trips
+	-All Trips DONE
+	-Add New DONE
+Events
+	-All Events DONE
+	-Add New DONE
+Staff
+	-All Staff DONE
+	-Add Staff DONE
+Options
+	Manage Bus Check-in
+	Manage Hotel Check-in
+Airport DONE
+	-Records DONE
+Housing DONE
+	-Records DONE
+
+
+LOGIN
+DASHBOARD HOME
+HEADER LOGIN/LOGOUT
+edit event link
+
+
+
+luisxa tasks
+
+COVER QUE REPRESENTE ISE TRIPS EN 600X300 PIXELES
+COVER QUE REPRESENTE ISE EVENTS EN 600X300 PIXELES
+COVER QUE REPRESENTE ISE STAFF EN 600X300 PIXELES
+COVER QUE REPRESENTE ISE BUS CHECK IN EN 600X300 PIXELES
+COVER QUE REPRESENTE ISE HOTEL CHECK IN EN 600X300 PIXELES
+COVER QUE REPRESENTE ISE HOUSING EN 600X300 PIXELES
+PONER NUEVO LOGO DE ISE EN LA IMAGEN DE AIRPORT PICK UP, SI GUSTAS CAMBIALA TODA O SOLO EL LOGO DE ISE
+
+
+
+
+
+
+LOGIN
+
+
+
+
+
+

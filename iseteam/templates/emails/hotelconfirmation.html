@@ -1,0 +1,31 @@
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/trips_confirmation.jpg">
+
+	<table cellspacing="0" cellpadding="0" border="0" width="600">
+		<tr>
+			<td>
+				<h2>CONGRATULATIONS!!!</h2>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<h3>YOU ARE IN ROOM {{ room.name }} AND YOUR ROOMMATES ARE THOSE GUYS...</h3>
+			</td>
+		</tr>
+
+	</table>
+
+
+	<table cellspacing="0" cellpadding="0" border="0" width="600">
+		{% for guy in room.roomates.all %}
+		<tr>
+			<td width="200">
+				<b>MEMBER {{ forloop.counter}}:</b>
+			</td>
+			<td width="400">
+				{{ guy.payment.name }} {{ guy.payment.last_name }}
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/jointheexperience.jpg">

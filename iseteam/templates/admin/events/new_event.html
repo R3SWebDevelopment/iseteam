@@ -1,0 +1,241 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+  Upload an Event
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.date.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.time.css">
+<link type="text/css" rel="stylesheet" href="{{ MEDIA_URL}}admin/assets/plugins/bootstrap3-wysihtml5/bootstrap3-wysihtml5.min.css">
+
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.date.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.time.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/legacy.js"></script>
+<script type="text/javascript">
+$(document).on('ready',function(){
+
+  $('.datepicker').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit: 'dd/mm/yyyy',
+    hiddenSuffix: '--submit'
+  });
+
+
+  var myCustomTemplates = {
+          "font-styles": function(locale) {
+              return '<li class="dropdown">' + '<a data-toggle="dropdown" class="btn btn-default dropdown-toggle ">' + '<span class="editor-icon editor-icon-headline"></span>' + '<span class="current-font">Normal</span>' + '<b class="caret"></b>' + '</a>' + '<ul class="dropdown-menu">' + '<li><a tabindex="-1" data-wysihtml5-command-value="p" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">Normal</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h1" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">1</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h2" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">2</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h3" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">3</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h4" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">4</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h5" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">5</a></li>' + '<li><a tabindex="-1" data-wysihtml5-command-value="h6" data-wysihtml5-command="formatBlock" href="javascript:;" unselectable="on">6</a></li>' + '</ul>' + '</li>';
+          },
+          emphasis: function(locale) {
+              return '<li>' + '<div class="btn-group">' + '<a tabindex="-1" title="CTRL+B" data-wysihtml5-command="bold" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-bold"></i></a>' + '<a tabindex="-1" title="CTRL+I" data-wysihtml5-command="italic" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-italic"></i></a>' + '<a tabindex="-1" title="CTRL+U" data-wysihtml5-command="underline" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-underline"></i></a>' + '</div>' + '</li>';
+          },
+          blockquote: function(locale) {
+              return '<li>' + '<a tabindex="-1" data-wysihtml5-display-format-name="false" data-wysihtml5-command-value="blockquote" data-wysihtml5-command="formatBlock" class="btn  btn-default" href="javascript:;" unselectable="on">' + '<i class="editor-icon editor-icon-quote"></i>' + '</a>' + '</li>'
+          },
+          lists: function(locale) {
+              return '<li>' + '<div class="btn-group">' + '<a tabindex="-1" title="Unordered list" data-wysihtml5-command="insertUnorderedList" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-ul"></i></a>' + '<a tabindex="-1" title="Ordered list" data-wysihtml5-command="insertOrderedList" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-ol"></i></a>' + '<a tabindex="-1" title="Outdent" data-wysihtml5-command="Outdent" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-outdent"></i></a>' + '<a tabindex="-1" title="Indent" data-wysihtml5-command="Indent" class="btn  btn-default" href="javascript:;" unselectable="on"><i class="editor-icon editor-icon-indent"></i></a>' + '</div>' + '</li>'
+          },
+          image: function(locale) {
+              return '<li>' + '<div class="bootstrap-wysihtml5-insert-image-modal modal fade">' + '<div class="modal-dialog ">' + '<div class="modal-content">' + '<div class="modal-header">' + '<a data-dismiss="modal" class="close">×</a>' + '<h3>Insert image</h3>' + '</div>' + '<div class="modal-body">' + '<input class="bootstrap-wysihtml5-insert-image-url form-control" value="http://">' + '</div>' + '<div class="modal-footer">' + '<a data-dismiss="modal" class="btn btn-default">Cancel</a>' + '<a data-dismiss="modal" class="btn btn-primary">Insert image</a>' + '</div>' + '</div>' + '</div>' + '</div>' + '<a tabindex="-1" title="Insert image" data-wysihtml5-command="insertImage" class="btn  btn-default" href="javascript:;" unselectable="on">' + '<i class="editor-icon editor-icon-image"></i>' + '</a>' + '</li>'
+          },
+          link: function(locale) {
+              return '<li>' + '<div class="bootstrap-wysihtml5-insert-link-modal modal fade">' + '<div class="modal-dialog ">' + '<div class="modal-content">' + '<div class="modal-header">' + '<a data-dismiss="modal" class="close">×</a>' + '<h3>Insert link</h3>' + '</div>' + '<div class="modal-body">' + '<input class="bootstrap-wysihtml5-insert-link-url form-control" value="http://">' + '<label class="checkbox"> <input type="checkbox" checked="" class="bootstrap-wysihtml5-insert-link-target">Open link in new window</label>' + '</div>' + '<div class="modal-footer">' + '<a data-dismiss="modal" class="btn btn-default">Cancel</a>' + '<a data-dismiss="modal" class="btn btn-primary" href="#">Insert link</a>' + '</div>' + '</div>' + '</div>' + '</div>' + '<a tabindex="-1" title="Insert link" data-wysihtml5-command="createLink" class="btn  btn-default" href="javascript:;" unselectable="on">' + '<i class="editor-icon editor-icon-link"></i>' + '</a>' + '</li>'
+          },
+          html: function(locale) {
+              return '<li>' + '<div class="btn-group">' + '<a tabindex="-1" title="Edit HTML" data-wysihtml5-action="change_view" class="btn  btn-default" href="javascript:;" unselectable="on">' + '<i class="editor-icon editor-icon-html"></i>' + '</a>' + '</div>' + '</li>'
+          }
+      }
+      //TODO: chrome doesn't apply the plugin on load
+  setTimeout(function() {
+      $('#id_description').wysihtml5({
+          html: true,
+          stylesheets: ["/media/admin/pages/css/editor.css"],
+          customTemplates: myCustomTemplates
+      });
+  }, 500);
+
+})
+</script>
+
+<script src="{{ MEDIA_URL }}admin/assets/plugins/bootstrap3-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="content">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Events</p>
+            </li>
+            <li><a href="#" class="active">New Event</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ MEDIA_URL }}img/covers/cover1.jpg" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-heading">
+                    <div class="panel-title">Upload a New event
+                    </div>
+                  </div>
+                  <div class="panel-body">
+                    <h3>With this tool, you will be able to upload New events that all people will love.</h3>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="row">
+      <div class="col-md-8 col-md-offset-2">
+
+
+        <div class="panel panel-transparent">
+          <div class="panel-body">
+            <h4>Please fill in all fields.</h4>
+            <form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+              <div class="row clearfix">
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Name</label>
+                    {{ form.name }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.name.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Date</label>
+                    {{ form.date }}
+                  </div>
+                  <label class="error" for="id_name">{{ form.date.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Price Pre-Sale</label>
+                    {{ form.price_presale }}
+                  </div>
+                  <label class="error" for="id_price_presale">{{ form.price_presale.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Price Sale</label>
+                    {{ form.price_sale }}
+                  </div>
+                  <label class="error" for="id_price_sale">{{ form.price_sale.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Video URL</label>
+                    {{ form.video }}
+                  </div>
+                  <label class="error" for="id_video">{{ form.video.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Cover</label>
+                    {{ form.cover }}
+                  </div>
+                  <label class="error" for="id_cover">{{ form.cover.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Brief</label>
+                    {{ form.brief }}
+                  </div>
+                  <label class="error" for="id_brief">{{ form.brief.errors }}</label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-sm-12">
+                  <div class="form-group form-group-default" aria-required="true">
+                    <label>event's Description</label>
+                      <div class="wysiwyg5-wrapper b-a b-grey">
+                        {{ form.description }}
+                      </div>
+                  </div>
+                  <label class="error" for="id_description">{{ form.description.errors }}</label>
+                </div>
+              </div>
+
+
+
+
+
+              <div class="text-center">
+                <input class="btn btn-success btn-lg btn-larger" type="submit" value="Upload Now">
+              </div>
+
+
+
+
+            </form>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+
+
+{% endblock %}

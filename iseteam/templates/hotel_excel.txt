@@ -1,0 +1,7 @@
+#, Name, Last name, Room
+
+{% for row in data %}
+	{{ row.0 }},{{ row.1|title }},{{ row.2|title }},{{ row.3 }}
+{% endfor %}
+
+

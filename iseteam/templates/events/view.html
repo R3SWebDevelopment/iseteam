@@ -1,0 +1,55 @@
+{% extends "events/base.html" %}
+
+{% block title %}
+{{ event.name|upper }} 
+{% endblock %}
+
+{% block content %}
+				<div class="main">
+					<div class="text-center">
+						<img class="wrapper2" style="padding: 0px;position: relative;left:-3px;margin-bottom:30px;" src="{{ event.cover.url }}" width="970">
+					</div>
+					<div class="column1 wrapper2" style="width:560px;margin-right:15px;height: 942px;">
+							<div class="font-oswald">
+								<div class="inline-block" style="width:300px">
+									<span style="font-size:30px">{{ event.name|upper }}</span>
+								</div>
+								<div class="inline-block">
+									<span style="font-size:18px;margin-left:10px;">{{ event.date }}</span>
+								</div>
+								<div>
+									<span style="font-size:16px;">PRICE PRE-SALE: ${{ event.price_presale }} MXN</span></br>
+									<span style="font-size:16px;">PRICE SALE: ${{ event.price_sale }} MXN</span>
+								</div>
+								<div>
+									<span style="font-size:16px;">-----------------------------------------------------------------------------------------------------------------------------------------------------------</span>
+								</div>
+							</div>
+							<div class="description-container" style="height:830px;overflow:auto;overflow-x:hidden;">
+								{% autoescape off %}
+					                {{ event.description }}
+					            {% endautoescape %}
+							</div>
+					</div>
+					<div class="column2">
+						<div class="wrapper2" style="height:600px;overflow: auto;overflow-x: hidden;">
+							<div class="fb-comments" data-href="http://www.isefamily.com{% url 'view_event' event.slug %}" data-colorscheme="light" data-width="350" data-numposts="10"></div>
+						</div>
+						<div class="wrapper2 text-align-center" style="margin-top:15px">
+							<h1 class="font-oswald">GET YOUR TICKETS HERE</h1>
+							<a href="#">
+								<img src="{{ MEDIA_URL }}img/ticket.png">
+							</a>
+						</div>
+					</div>
+		          {% if event.video %}
+		          <div class="video-area text-align-center" style="padding-top:40px">
+		            <h1 class="font-oswald" style="margin:20px 0px">CHECK OUT OUR VIDEO</h1>
+		            {% if event.is_youtube %}
+		            <iframe width="640" height="360"  src="//www.youtube.com/embed/{{ event.get_youtube_id }}" frameborder="0" allowfullscreen></iframe>
+		            {% else %}{% if event.is_vimeo %}
+		            <iframe src="//player.vimeo.com/video/{{ event.get_vimeo_id }}?byline=0&amp;portrait=0" width="640" height="360" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+		            {% endif %}{% endif %}
+		          </div>
+		          {% endif %}
+{% endblock %}

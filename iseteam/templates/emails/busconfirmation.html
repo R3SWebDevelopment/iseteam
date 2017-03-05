@@ -1,0 +1,61 @@
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/trips_confirmation.jpg">
+
+	<table cellspacing="0" cellpadding="0" border="0" width="600">
+		<tr>
+			<td>
+				<h2>BUS CHECK-IN IS DONE!</h2>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<h3>YOU HAVE SUCCESFULLY REGISTERED IN THE {{ bus|upper }} BUS. PLEASE ARRIVE THERE 30 MINUTES BEFORE TIME OF DEPARTURE</h3>
+			</td>
+		</tr>
+
+	</table>
+
+
+	<table cellspacing="0" cellpadding="0" border="0" width="600">
+		<tr>
+			<td width="200">
+				<b>YOUR NAME:</b>
+			</td>
+			<td width="400">
+				{{ confirmation.payment.name|upper }} {{ confirmation.payment.last_name|upper }}
+			</td>
+		</tr>
+		<tr>
+			<td width="200">
+				<b>YOUR BUS COLOR:</b>
+			</td>
+			<td width="400">
+				{{ bus|upper }}
+			</td>
+		</tr>
+		<tr>
+			<td width="200">
+				<b>CONFIRMATION NUMBER:</b>
+			</td>
+			<td width="400">
+				{{ confirmation.code }}
+			</td>
+		</tr>
+		<tr>
+			<td width="200">
+				<b>DEPARTURE DATE:</b>
+			</td>
+			<td width="400">
+				{{ confirmation.payment.trip.date|upper }} at 22:00.
+			</td>
+		</tr>
+		<tr>
+			<td width="200">
+				<b>TRIP:</b>
+			</td>
+			<td width="400">
+				{{ confirmation.payment.trip.name|upper }}
+			</td>
+		</tr>
+	</table>
+
+<img width="700px" src="https://s3-us-west-2.amazonaws.com/isemonterrey/email/jointheexperience.jpg">

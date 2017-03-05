@@ -1,0 +1,462 @@
+{% extends "admin/base.html" %}
+
+{% block title %}
+PAYMENTS RECORDS | ISE | WE CARE
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/pnotify.custom.min.css">
+{% endblock %}
+{% block scripts %}
+<script src="{{ MEDIA_URL }}/js/pnotify.custom.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Modal -->
+<div class="modal fade disable-scroll staff-records" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title font-oswald" id="myModalLabel">HISTORY</h4>
+          </div>
+          <div class="modal-body">
+
+            <div id="seeHistoryRecords">
+            </div>
+        
+          </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="page-content-wrapper">
+  <!-- START PAGE CONTENT -->
+  <div class="">
+    <div class="jumbotron page-cover" data-pages="parallax">
+      <div class="container-fluid container-fixed-lg">
+        <div class="inner" style="transform: translateY(0px); opacity: 1;">
+          <!-- START BREADCRUMB -->
+          <ul class="breadcrumb">
+            <li>
+              <p>Trips</p>
+            </li>
+            <li><a href="#" class="active">{{ trip }}</a>
+            </li>
+          </ul>
+          <!-- END BREADCRUMB -->
+          <div class="container-md-height m-b-20">
+            <div class="row row-md-height">
+              <div class="col-lg-7 col-md-6 col-md-height col-middle bg-white">
+                <!-- START PANEL -->
+                <div class="full-height">
+                  <div class="panel-body text-center">
+                    <img class="image-responsive-height" src="{{ trip.cover.url }}" alt="ISE">
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+              <div class="col-lg-5 col-md-height col-md-6 col-top">
+                <!-- START PANEL -->
+                <div class="panel panel-transparent">
+                  <div class="panel-body">
+                    <h3>{{ trip }}</h3>
+                    <h4>Payment Records</h4>
+                    <a class="btn btn-lg btn-warning" href="/trips/{{ trip.pk }}/paymentsexcel/">Export to Excel</a>
+                    <br>
+                  </div>
+                </div>
+                <!-- END PANEL -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+        <div class="row">
+
+            <div class="col-md-10 col-md-offset-1">
+
+                <script type="text/javascript">
+
+                    $(document).on('ready', function(){
+
+
+                        $('.deletePayment').on('click',function(e){
+                            e.preventDefault();
+                            href = $(this).attr('href')
+                            if(confirm('Are you sure to delete this payment?')) {
+                                window.location = href;
+                            }
+                        });
+
+                        $('.staff-select').on('change',function(){
+                            data = $(this).attr('data-name')
+                            staff = $(this).val()
+                            record = $(this).attr('record-pk')
+                            $('#a-'+record).empty()
+                            $('#a-'+record).append("<a paytrip-id='" + record + "'" + "class='btn btn-block btn-xs btn-success assignstaff' data-name='" + data + "'" + "href='/trips/assignstaff/" + record + "/" + staff + "'>ASIGN</a> ")
+                        });
+                        $('.see-history-button').on('click',function(e){
+                            e.preventDefault();
+                            var payment = $(this).attr('paytrip-id');
+                            $('#seeHistoryRecords').empty();
+                            $('#seeHistoryRecords').load('/trips/staffhistory/' + payment);
+                            $('.staff-records').modal();
+                        });
+
+
+
+
+                        $('.assign-parent').on('click', "a", function(e){
+                            e.preventDefault();
+                            url = $(this).attr('href');
+                            record = $(this).attr('paytrip-id');
+                            $.getJSON( url, {} )
+                              .done(function( json ) {
+                                if (json.success == 'true'){
+                                    // Change the staff name
+                                    $('span.current-staff[paytrip-id="'+ record +'"]').html(json.staff);
+                                    // Launch Notification
+                                    new PNotify({
+                                        title: 'Done',
+                                        text: 'You have successfully assigned to ' + json.staff + ' as the staff who sold the ticket!',
+                                        type: 'success'
+                                    });
+
+                                }
+                              })
+                              .fail(function( jqxhr, textStatus, error ) {
+                                new PNotify({
+                                    title: 'Sorry!',
+                                    text: 'Something was wrong, please try again.',
+                                    type: 'error'
+                                });
+                                var err = textStatus + ", " + error;
+                                console.log( "Request Failed: " + err );
+                            });
+                        });
+
+                        $('.mark-as-delivered').on('click', "a", function(e){
+                            e.preventDefault();
+                            url = $(this).attr('href');
+                            record = $(this).attr('paytrip-id');
+                            paid_html = '<span class="label label-success">Paid and delivered</span>';
+                            $.getJSON(url,{})
+                                .done(function(json){
+                                    if (json.success == 'true'){
+                                        // Update Button
+                                        $('.change-status-container[paytrip-id="'+ record +'"]').html(paid_html);
+                                        // Launch Successfull Notification
+                                        new PNotify({
+                                        title: 'Done',
+                                        text: 'You have successfully changed the status of trip to PAID AND DELIVERED to ' + json.client,
+                                        type: 'success'
+                                    });
+                                    }
+
+                                })
+                                .fail(function(jqxhr, textStatus, error){
+                                    // Launch Error Notification
+                                    new PNotify({
+                                        title: 'Sorry!',
+                                        text: 'Something was wrong, please try again.',
+                                        type: 'error'
+                                    });
+                                    var err = textStatus + ", " + error;
+                                    console.log( "Request Failed: " + err );
+
+                                });
+
+                        });
+
+
+                        $('.mark-as-paid').on('click', "a", function(e){
+                            e.preventDefault();
+                            url = $(this).attr('href');
+                            record = $(this).attr('paytrip-id');
+                            $.getJSON(url,{})
+                                .done(function(json){
+                                    if (json.success == 'true'){
+                                        // Put confirmation number
+                                        $('.confirmation-number[paytrip-id="'+ record +'"]').html(json.confirmation);
+                                        // Show hidden delivered button and hide mark as paid button
+                                        $('span.mark-as-delivered[paytrip-id="'+ record +'"]').removeClass('hidden');
+                                        $('span.mark-as-paid[paytrip-id="'+ record +'"]').addClass('hidden');
+                                        // Launch Successfull Notification
+                                        new PNotify({
+                                        title: 'Done',
+                                        text: 'You have successfully changed the status of trip to PAID to ' + json.client,
+                                        type: 'success'
+                                    });
+                                    }
+
+                                })
+                                .fail(function(jqxhr, textStatus, error){
+                                    // Launch Error Notification
+                                    new PNotify({
+                                        title: 'Sorry!',
+                                        text: 'Something was wrong, please try again.',
+                                        type: 'error'
+                                    });
+                                    var err = textStatus + ", " + error;
+                                    console.log( "Request Failed: " + err );
+
+                                });
+
+                        });
+
+                    })
+                </script>
+
+                <div class="text-center" id="list">
+
+                    <div class="text-left">
+                        <a href="?order_by=date#list" class="order-buttons"><span class="glyphicon glyphicon-sort-by-order-alt"></span> Order by date</a>
+                        <a href="?order_by=status#list" class="order-buttons"><span class="glyphicon glyphicon-sort-by-alphabet"></span> Order by status</a>
+                    </div>
+
+                    <table class="table table-hover text-left" style="margin-top:30px; margin-left:15px;">
+                        <thead>
+                        <tr class="warning">
+                            <th>#</th>
+                            <th>Options</th>
+                            <th>Full Name</th>
+                            <th>University & Email</th>
+                            <th>Age & Gender & Country</th>
+                            <th>Method</th>
+                            <th>Recommendations</th>
+                            <th>Date Time</th>
+                            <th>Status</th>
+                            <th>Staff</th>
+                            <th>Membership</th>
+                            <th>Confirmation Number</th>
+                        </thead>
+                        <tbody>
+                            {% for record in records %}
+                          <tr>
+                            <td>{{ forloop.counter}}</td>
+                            <td>
+                            <div class="dropdown">
+                              <a href="#" class="dropdown-toggle btn btn-block btn-xs btn-inverse" data-toggle="dropdown"><span class="glyphicon glyphicon-tasks"></span></a>
+                              <ul class="dropdown-menu" style="position: absolute;top: -110px;left: 50px;">
+                                {% if user.is_superuser %}
+                                    <li><a href="/trips/edit/{{ record.pk }}"><span class="glyphicon glyphicon-pencil"></span> Edit Info</a></li>
+                                    <li><a href="/trips/deletepayment/{{ record.pk }}"><span class="glyphicon glyphicon-trash"></span> Delete</a></li>
+                                    {% if record.is_paid and not record.is_delivered %}
+                                    <li><a href="/trips/markasunpaid/{{ record.pk }}"><span class="glyphicon glyphicon-thumbs-down"></span> Mark as Unpaid</a></li>
+                                    {% endif %}
+                                    {% if record.is_delivered and record.is_paid %}
+                                    <li><a href="/trips/markasundelivered/{{ record.pk }}"><span class="glyphicon glyphicon-thumbs-down"></span> Mark as Undelivered</a></li>
+                                    {% endif %}
+                                {% endif %}
+                                <li class="divider"></li>
+                                <li><a href="/trips/sendfirstmail/{{ record.pk }}"><span class="glyphicon glyphicon-send"></span> First Email</a></li>
+                                {% if record.is_paid %}
+                                <li><a href="/trips/sendconfirmationmail/{{ record.pk }}"><span class="glyphicon glyphicon-send"></span> Confirmation Email</a></li>
+                                {% endif %}
+                              </ul>
+                            </div>
+                            </td>
+                            <td>{{ record.name }} {{ record.last_name }}</td>
+                            <td>{{ record.university }}</br>
+                                {{ record.email }}
+
+                            </td>
+                            <td>{{ record.age }} - {{ record.gender }} - {{ record.country }}</td>
+                            <td>{{ record.method }}</td>
+                            <td>{{ record.refered_by }}</td>
+                            <td>{{ record.timestamp|date:'SHORT_DATETIME_FORMAT' }}</td>
+                            
+                            <td paytrip-id="{{ record.pk }}" class="change-status-container">
+                                {% if not record.is_paid and not trip.is_full%}
+                                <span paytrip-id="{{ record.pk }}" class="label label-danger mark-as-paid"><a paytrip-id="{{ record.pk }}" href="/trips/paytrip/{{ record.pk }}" style="color:white">Mark as paid</a></span>
+                                <span paytrip-id="{{ record.pk }}" class="label label-warning mark-as-delivered hidden"><a paytrip-id="{{ record.pk }}" href="/trips/delivered/{{ record.pk }}" style="color:white">Mark as delivered</a></span>
+                                {% else %}
+                                {% if not record.is_paid and trip.is_full and not user.is_superuser%}
+                                <span class="label label-danger">TRIP SOLD OUT...SORRY</span>
+                                {% else %}
+                                {% if not record.is_paid and user.is_superuser %}
+                                <span paytrip-id="{{ record.pk }}" class="label label-danger mark-as-paid"><a paytrip-id="{{ record.pk }}" href="/trips/paytrip/{{ record.pk }}" style="color:white">Mark as paid</a></span>
+                                <span paytrip-id="{{ record.pk }}" class="label label-warning mark-as-delivered hidden"><a paytrip-id="{{ record.pk }}" href="/trips/delivered/{{ record.pk }}" style="color:white">Mark as delivered</a></span>
+                                {% endif %}{% endif %}{% endif %}
+
+
+                                {% if user.is_superuser and record.is_paid and not record.is_delivered %}
+                                <span class="label label-warning mark-as-delivered"><a paytrip-id="{{ record.pk }}" href="/trips/delivered/{{ record.pk }}" style="color:white">Mark as delivered</a></span>
+                                {% endif %}
+
+                                {% if not user.is_superuser and record.is_paid and not record.is_delivered %}
+                                <span class="label label-info">Paid but not delivered</span>
+                                {% endif %}
+
+                                {% if record.is_delivered and record.is_paid %}
+                                <span class="label label-success">Paid and delivered</span>
+                                {% endif %}
+                            </td>
+
+                            <td class="text-center">
+                                <select class="staff-select" record-pk="{{ record.pk }}" data-name="{{record.name }} {{ record.last_name }}" >
+                                  <option value='1' selected='selected'>Select a Staff</option>
+                                {% for s in staff %}
+                                  <option value="{{ s.pk }}">{{s.get_full_name}}</option>
+                                {% endfor %}
+                                </select>
+                                <div class="assign-parent" id="a-{{ record.pk }}">
+                                </div>
+                                <div class="staff-container">
+                                {% if record.staff %}
+                                    Current: <span paytrip-id="{{ record.pk }}" class="current-staff">{{ record.staff.get_full_name }}</span></br>
+                                    <a class="see-history-button" paytrip-id="{{ record.pk }}" href="#" data-target=".staff-records">See History</a>
+                                {% else %}
+                                    Current: <span paytrip-id="{{ record.pk }}" class="current-staff">Nobody</span> 
+                                {% endif %}
+                                </div>
+
+
+
+                            </td>
+                            <td>{{ record.membership }}</td>
+                            <td paytrip-id="{{ record.pk }}" class="confirmation-number">
+                                {% if record.is_paid %}
+                                {{ record.confirmation.code }}
+                                {% else %}
+                                Pending
+                                {% endif %}
+                            </td>
+                          </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+
+                <div class="alert alert-success text-center" role="alert">
+                  <strong>IMPORTANT! </strong>STATS CONSIDERED ONLY INFO OF CLIENTS WHO ARE MARKED AS PAID
+                </div>
+
+                <div>
+                    <h4 class="font-oswald text-center">SALES</h4></br>
+
+                    <div class="col-md-6">
+                        <table class="table table-hover text-left">
+                            <thead>
+                            <tr class="warning">
+                                <th>#</th>
+                                <th>Seller</th>
+                                <th>Quantity</th>
+                            </thead>
+                            <tbody>
+                                {% for person in sales %}
+                              <tr>
+                                <td>{{ forloop.counter}}</td>
+                                <td>{{ person.staff }}</td>
+                                <td>{{ person.quantity }}</td>
+                              </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <table class="table table-hover text-left">
+                            <thead>
+                            <tr class="warning">
+                                <th>Delivered</th>
+                                <th>Paid</th>
+                                <th>Waiting</th>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>{{ delivered }}</td>
+                                <td>{{ paid }}</td>
+                                <td>{{ still }}</td>
+                              </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-md-8 col-md-offset-2">
+
+
+                <h4 class="font-oswald text-center">DEMOGRAPHY</h4></br>
+
+                <table class="table table-hover text-left">
+                    <thead>
+                    <tr class="warning">
+                        <th>WOMEN</th>
+                        <th>MEN</th>
+                        <th>MEXICANS</th>
+                        <th>FOREIGNERS</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {% for gender in genders %}
+                        <td>{{ gender.gender__count }}</td>
+                        {% endfor %}
+                        <td>{{ mexicans }}</td>
+                        <td>{{ foreigners }}</td>
+                      </tr>
+                    </tbody>
+                </table>
+                <table class="table table-hover text-left">
+                    <thead>
+                    <tr class="warning">
+                        <th>ITESM</th>
+                        <th>UDEM</th>
+                        <th>UANL</th>
+                        <th>UR</th>
+                        <th>CEDIM</th>
+                        <th>EGADE</th>
+                        <th>WORKING</th>
+                        <th>OTHER</th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{{ itesm }}</td>
+                        <td>{{ udem }}</td>
+                        <td>{{ uanl }}</td>
+                        <td>{{ ur }}</td>
+                        <td>{{ cedim }}</td>
+                        <td>{{ egade }}</td>
+                        <td>{{ working }}</td>
+                        <td>{{ other}}</td>
+                      </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+  </div>
+  <!-- END PAGE CONTENT -->
+  <!-- START COPYRIGHT -->
+  {% include "admin/footer.html"%}
+</div>
+
+
+{% endblock %}
+
+

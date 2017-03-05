@@ -1,0 +1,6 @@
+{
+  
+       "require": {
+        "conekta/conekta-php": "^3.0"
+    }
+}

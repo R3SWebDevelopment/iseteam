@@ -1,0 +1,118 @@
+<!-- Modal -->
+<div class="modal fade" id="busModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+	    <form id="busForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <div>
+	        	<h4 class="modal-title font-oswald" id="myModalLabel">
+					<img src="{{ MEDIA_URL }}/img/logo.png" width="100">
+	        		BUS CHECK-IN
+	        	</h4>
+	        </div>
+	      </div>
+	      <div class="modal-body">
+	        <div class="col-md-12">
+
+	        <script type="text/javascript">
+	        $(document).on('ready', function(){
+	        	$('#select-trip2').load('/trips/html/');
+
+	        	$('#select-trip2').on('change', function(){
+	      			val = $(this).val();
+	      			$('#select-bus').load('/trips/buses/' + val + '/');
+	      			$('#busContainer').fadeIn("slow");
+
+	      		})
+	        })
+	        </script>
+			<div class="row block-form">
+				<h4>Trip</h4>
+				<div>
+					<select id='select-trip2' class='form-control' name='trip'>
+					</select>
+				</div>
+			</div>
+
+			<div id="busContainer" style="display:none">
+			   	<div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Name</label>
+					   		<input type="text" class="form-control" name="name" required>
+				   		</div>
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Last Name</label>
+					   		<input type="text" class="form-control" name="last_name" required>
+				   		</div>
+			   		</div>
+			    </div>
+
+			   	<div class="row block-form">
+			   		<div class="row">
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Confirmation Number</label>
+					   		<input type="text" class="form-control" name="confirmation" required>
+				   		</div>
+				   		<div class="col-md-6">
+					   		<label class="font-oswald">Choose your bus</label>
+							<select id='select-bus' class='form-control' name='bus'>
+							</select>
+				   		</div>
+			   		</div>
+			    </div>
+
+
+			    <p id="fillMessage">
+			    	*Please fill out all required fields.</br>
+			    	*Confirmation field in uppercase.
+			    </p>
+
+				<div class="alert alert-danger alert-dismissable">
+			    	<p style="font-size:20px;font-weight: bold;">By following this step you're accepting our Safety Release and Cancellation Policy</p>
+			    	<p>Read this document at <a target="_blank" href="https://s3-us-west-2.amazonaws.com/isemonterrey/Safety-Release-and-Cancellation-Policy.pdf">HERE</a></p>
+			    </div>
+
+			   	<div id="busMessage" class="alert alert-success alert-dismissable" style="display:none">
+				  <strong>CONGRATS.</strong>  
+				  <h4>You have successfully registered into a bus.</h4>
+				</div>
+				<div id="errorMessage" class="alert alert-danger alert-dismissable" style="display:none">
+				  <strong>SORRY.</strong>  
+				  <h4>Your confirmation code is not valid, try again.</h4>
+				</div>
+			</div>
+
+	      </div>
+	      </div>
+
+	      <div class="modal-footer">
+	        <a href="#" id="busSubmit" class="btn btn-primary">SUBMIT</a>
+	      </div>
+	      <script type="text/javascript">
+				$("#busSubmit").click(function() {
+				    var url = "/trips/bus/"; 
+				    $.ajax({
+				           type: "POST",
+				           url: url,
+				           data: $("#busForm").serialize(),
+				           success: function(json)
+				           {
+				           		$('#fillMessage').hide();
+				               console.log(json.done);
+				               if (json.done == 'yes'){
+				               	$('#busMessage').fadeIn("slow");
+				               }
+				               else{
+				               	$('#errorMessage').fadeIn("slow");
+				               }
+				           }
+				         });
+				    return false; 
+				});
+	      </script>
+	    </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

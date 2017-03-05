@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+	user = models.OneToOneField(User)
+	country = models.CharField(max_length=124, null=True)
+	university = models.CharField(max_length=124, null=True)
+	start_period = models.DateField(null=True)
+	end_period = models.DateField(null=True)
+	is_new = models.BooleanField(default=True)
+
+{% block content %}
+<div>
+	<h1>{{ profile }}</h1>
+
+	<a href="{{ profile.facebookprofile.facebook_profile_url }}">
+		<img src="http://graph.facebook.com/{{ profile.facebookprofile.facebook_id }}/picture?type=square">
+	</a>
+
+	<p>
+		<span>country</span></br>
+		<span>{{ profile.profile.country }}</span>
+	</p>
+
+	<p>
+		<span>university</span></br>
+		<span>{{ profile.profile.university }}</span>
+	</p>
+
+	<p>
+		<span>start period</span></br>
+		<span>{{ profile.profile.start_period }}</span>
+	</p>
+
+	<p>
+		<span>end period</span></br>
+		<span>{{ profile.profile.end_period }}</span>
+	</p>
+
+
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div>
+		<img src="{{ party.cover.url }}">
+
+		<iframe width="560" height="315" src="//www.youtube.com/embed/{{ party.get_youtube_id }}" frameborder="0" allowfullscreen></iframe>
+
+		<h1>{{ party.name }}</h1>
+		<h2>{{ party.place }}</h2>
+		<h3>$ {{ party.price }}</h3>
+
+		<p>{{ party.description }}</p>
+
+		<p>{{ party.date }}</p>
+
+		<a href="{{ party.tickets }}">Get Tickets</a>
+
+		<a href="{{ party.facebook }}">View on FB</a>
+
+		<a href="{{ party.facebook }}">MEDIA</a>
+
+	</div>
+{% endblock %}

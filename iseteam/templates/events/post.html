@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Upload a Event
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.date.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/default.time.css">
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}jqueryte/jquery-te-1.4.0.css">
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.date.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/picker.time.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/legacy.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}jqueryte/jquery-te-1.4.0.min.js"></script>
+<script type="text/javascript">
+$(document).on('ready',function(){
+  $('.datepicker').pickadate({
+    format: 'dd/mm/yyyy',
+    formatSubmit: 'dd/mm/yyyy',
+    hiddenSuffix: '--submit'
+  });
+
+  $(".textarea-html").jqte();
+
+})
+
+</script>
+{% endblock %}
+
+{% block content %}
+<body>
+
+<div class="col-lg-8">
+
+	<div class="margin10">
+		<h1 id="page-title">Upload a Event</h1>
+	</div>
+
+    <form  method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+    	<div class="margin10">
+		{{ form.name }}
+		{{ form.name.errors }}
+    	</div>
+
+    	<div class="margin10">
+		{{ form.date }}
+		{{ form.date.errors }}
+    	</div>
+
+        <div class="margin10">
+        {{ form.price_presale }}
+        {{ form.price_presale.errors }}
+        </div>
+
+        <div class="margin10">
+        {{ form.price_sale }}
+        {{ form.price_sale.errors }}
+        </div>
+
+    	<div class="margin10">
+		{{ form.tickets }}
+		{{ form.tickets.errors }}
+    	</div>
+
+    	<div class="margin10">
+		{{ form.facebook }}
+		{{ form.facebook.errors }}
+    	</div>
+
+    	<div class="margin10">
+		{{ form.video }}
+		{{ form.video.errors }}
+    	</div>
+
+    	<div class="margin10">
+    	<h5>select cover</h5>
+		{{ form.cover }}
+		{{ form.cover.errors }}
+    	</div>
+
+    	<div class="margin10">
+		<h5>copy and paste the first paragraph of the description</h5>
+
+		{{ form.brief }}
+		{{ form.brief.errors }}
+    	</div>
+
+    	<div class="margin10">
+		<h5>Copy and paste facebook's description</h5>
+
+		{{ form.description }}
+		{{ form.description.errors }}
+    	</div>
+
+    	<div class="text-align-center">
+    		<input class="btn btn-lg btn-success" type="submit" value="Upload Now">
+    	</div>
+
+  </form>
+
+</div>
+
+</body>
+
+{% endblock %}

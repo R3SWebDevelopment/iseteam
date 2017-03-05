@@ -1,0 +1,74 @@
+<a href="#" data-toggle="modal" data-target="#contactModal" class="contact-icon hidden-xs hidden-sm">
+	<img src="{{ MEDIA_URL }}img/contact.png" width="100">
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content wrapper2">
+	    <form id="contactForm" method="POST" enctype="multipart/form-data">{% csrf_token %}
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title font-oswald" id="myModalLabel">CONTACT US</h4>
+	      </div>
+	      <div class="modal-body">
+	        <div class="col-md-12">
+
+			<div id="contactMessage" class="alert alert-success alert-dismissable" style="display:none">
+			  <strong>THANK YOU.</strong>  
+			  <h4>ISE TEAM WILL BE GLAD TO HELP YOU.</h4>
+			</div>
+
+		        	<div class="row">
+		        		<div class="col-md-6">
+		        			<div>
+		        				<label class="font-oswald">NAME</label>
+		        				<input type="text" name="name" class="form-control">
+		        			</div>
+		        				<div>
+		        				<label class="font-oswald">PHONE</label>
+		        				<input type="text" name="phone" class="form-control">
+		        			</div>
+		        		</div>
+		        		<div class="col-md-6">
+		        			<div>
+		        				<label class="font-oswald">EMAIL</label>
+		        				<input type="text" name="email" class="form-control">
+		        			</div>
+		        				<div>
+		        				<label class="font-oswald">SUBJECT</label>
+		        				<input type="text" name="subject" class="form-control">
+		        			</div>
+		        		</div>
+		        	</div>
+		        	<div class="row">
+		        		<div class="col-md-12">
+			        		<label class="font-oswald">COMMENTS</label>
+			        		<textarea name="comment" class="form-control"></textarea>
+		        		</div>
+		        	</div>
+	        </div>
+	      </div>
+	      <div class="modal-footer">
+	        <a href="#" id="contactSubmit" class="btn btn-primary">SUBMIT</a>
+	      </div>
+	      <script type="text/javascript">
+				$("#contactSubmit").click(function() {
+					$('#contactMessage').fadeIn("slow");
+				    var url = "/contact/"; 
+				    $.ajax({
+				           type: "POST",
+				           url: url,
+				           data: $("#contactForm").serialize(),
+				           success: function(json)
+				           {
+				               console.log(json.done);
+				           }
+				         });
+				    return false; 
+				});
+	      </script>
+	    </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

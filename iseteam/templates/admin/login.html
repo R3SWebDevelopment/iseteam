@@ -1,0 +1,28 @@
+{% extends "base-index.html" %}
+
+
+{% block title %}
+	International Student Embassy|Welcome|We Care
+{% endblock %}
+
+{% block css %}
+	<link href='//fonts.googleapis.com/css?family=Archivo+Narrow:700' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}css/flat-ui.css">
+	<link href='//fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+{% endblock %}
+
+{% block content %}
+	<div class="menu text-center" style="margin-top:0px">
+		<div class="wrapper2" style="width:500px;margin:0 auto">
+		<img src="{{ MEDIA_URL }}img/logo.png">
+		<form action="" method="POST" enctype="multipart/form-data">{% csrf_token %}
+			<input type="text" class="form-control" placeholder="Username" name="username">
+			{{ form.username.errors }}
+			<input type="password" class="form-control" placeholder="Password" name="password">
+			{{ form.password.errors }}
+			<input type="submit" value="SIGN IN" class="btn btn-block btn-lg btn-success">
+		</form>
+		</div>
+	</div>
+{% endblock %}
