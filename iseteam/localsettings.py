@@ -29,4 +29,7 @@ STRIPE_LIVE_SECRET = 'sk_test_AhGjXeOolGO1EIFOrJyqjoal'
 STRIPE_LIVE_PUBLISHABLE = 'pk_test_28jhCdG0CjPtgQ6E2L26AEkd'
 
 
+# override STAFF_EMAIL
+STAFF_EMAIL = ('charsoftmx@gmail.com',)
+
 
