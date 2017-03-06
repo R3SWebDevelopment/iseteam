@@ -13,7 +13,7 @@ from django.views.generic import DeleteView, ListView
 from django.contrib.auth import authenticate, login
 
 from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm
+from iseteam.trips.forms import LogInForm, RoomForm
 from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
@@ -390,8 +390,9 @@ def bus(request):
 def hotel_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     rooms = Room.objects.filter(trip=trip)
+    add_buss_form = RoomForm()
     return render_to_response('admin/trips/rooms.html',
-                              {'rooms': rooms, 'trip': trip},
+                              {'rooms': rooms, 'trip': trip, 'add_buss_form': add_buss_form},
                               context_instance=RequestContext(request))
 
 

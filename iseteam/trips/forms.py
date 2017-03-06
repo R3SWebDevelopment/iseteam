@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput,Select
 
-from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip
+from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room
 
 from django.utils.translation import ugettext_lazy as _  # Are you using Translation on the entire project?
 from django.contrib.auth.models import User
@@ -113,6 +113,16 @@ class TripForm(ModelForm):
             'cover': FileInput(attrs={'placeholder': '', 'class': 'form-control'}),
             'brief': Textarea(attrs={'placeholder': '', 'class': 'form-control', 'style': 'height:100px'}),
             'description': Textarea(attrs={'placeholder': 'Type here...', 'class': 'wysiwyg demo-form-wysiwyg'}),
+        }
+
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
+        exclude = ('trip', 'available_rooms', 'is_full', 'roomates',)
+        widgets = {
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'capacity': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1'}),
         }
 
 

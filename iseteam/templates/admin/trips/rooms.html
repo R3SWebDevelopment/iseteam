@@ -7,6 +7,16 @@ ROOM RECORDS | ISE | WE CARE
 {% block css %}
 {% endblock %}
 {% block scripts %}
+<script>
+    $('body').ready(function(){
+        var add_room_trigger = $(this).find('#add_room_trigger');
+        var modal_view = $(this).find('#add_room');
+        $(add_room_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_view).modal()
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -55,6 +65,14 @@ ROOM RECORDS | ISE | WE CARE
       </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-1 col-md-offset-10">
+            <a id="add_room_trigger" class="btn btn-lg btn-success" href="/trips/{{ trip.pk }}/hotelexcel/">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                Add Room
+            </a>
+        </div>
+    </div>
 
     <div class="row">
 
@@ -103,6 +121,7 @@ ROOM RECORDS | ISE | WE CARE
   {% include "admin/footer.html"%}
 </div>
 
+{% include 'admin/modal-form.html' with id='add_room' title='Add Room' form=add_buss_form mode='create' create_label='Add Room' %}
 
 {% endblock %}
 
