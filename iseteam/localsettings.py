@@ -2,11 +2,22 @@ from iseteam.settings import *
 import dj_database_url
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
+"""
 DATABASES = {'default':
                    dj_database_url.config(
                   default='postgres://wesaqcqdkycbqp:SuyLbZne6yoAQAtWIDNRwWRoG5@ec2-23-23-81-221.compute-1.amazonaws.com:5432/d6mpu8c00tulqs')
         }
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'iseteam',
+        'USER': 'iseteam_user',
+        'PASSWORD': 'SkipperMan8',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
 
 #IseTeamDev Facebook Settings
 FACEBOOK_APP_ID = '825938124180584'
