@@ -253,6 +253,15 @@ class Room(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    @property
+    def rooms(self):
+        return self.room_set.all()
+
+    @property
+    def rooms_with_available_rooms(self):
+        rooms = self.rooms
+        return rooms if rooms.exists() else rooms.filter(available_rooms__gte=1)
+
 
 class CardPayment(models.Model):
     user = models.ForeignKey(User, blank=True, null=True)

@@ -431,8 +431,14 @@ def admin_hotel_records_add_multiple_room(request, tripID):
                                   {'form': form, 'action_url': action_url, 'create_label': create_label,
                                    'mode': 'create', 'title': title, 'reload_when_submit_success': True},
                                   context_instance=RequestContext(request))
-    print "ERROR"
     raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_edit_room(request, tripID, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+
 
 
 @staff_member_required

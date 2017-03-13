@@ -21,6 +21,12 @@ ROOM RECORDS | ISE | WE CARE
             e.preventDefault();
             $(modal_multiple_room_view).modal()
         });
+        var edit_room_trigger = $(this).find('.edit_room_trigger');
+        var modal_edit_room_view = $(this).find('#edit_room');
+        $(edit_room_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_edit_room_view).modal()
+        });
     });
 </script>
 {% endblock %}
@@ -103,7 +109,16 @@ ROOM RECORDS | ISE | WE CARE
 
             {% for room in rooms %}
 
-            <h4>Room {{ room }}</h4>
+
+            <div class = "col-md-6">
+                <h4>Room {{ room }}</h4>
+            </div>
+            <div class = "col-md-6">
+                <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
+                    <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                    Edit
+                </button>
+            </div>
             <table class="table table-hover text-left" style="margin-top:30px">
                 <thead>
                 <tr class="warning">
@@ -142,7 +157,8 @@ ROOM RECORDS | ISE | WE CARE
 {% url 'admin_hotel_records_add_one_room' tripID=trip.id as add_one_room_action %}
 {% include 'admin/modal-form.html' with id='add_one_room' title='Add One Room' form=add_room_form mode='create' action_url=add_one_room_action create_label='Add Room' reload_when_submit_success=True %}
 {% url 'admin_hotel_records_add_multiple_room' tripID=trip.id as add_multiple_room_action %}
-{% include 'admin/modal-form.html' with id='add_multiple_room' title='Add Multiple Room' form=add_multiple_room_form mode='create' action_url=add_multiple_room_action create_label='Add Rooms' reload_when_submit_success=True%}
+{% include 'admin/modal-form.html' with id='add_multiple_room' title='Add Multiple Room' form=add_multiple_room_form mode='create' action_url=add_multiple_room_action create_label='Add Rooms' reload_when_submit_success=True %}
+{% include 'admin/modal-form.html' with id='edit_room' %}
 
 {% endblock %}
 
