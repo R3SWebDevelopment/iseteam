@@ -25,7 +25,13 @@ ROOM RECORDS | ISE | WE CARE
         var modal_edit_room_view = $(this).find('#edit_room');
         $(edit_room_trigger).click(function(e){
             e.preventDefault();
-            $(modal_edit_room_view).modal()
+            var url = $(this).data('url');
+            $(modal_edit_room_view).modal('hide');  // Hide in case it still been showing
+            $(modal_edit_room_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_edit_room_view).modal({
+                'remote': url
+            });
+            $(modal_edit_room_view).modal('show');
         });
     });
 </script>
@@ -158,7 +164,7 @@ ROOM RECORDS | ISE | WE CARE
 {% include 'admin/modal-form.html' with id='add_one_room' title='Add One Room' form=add_room_form mode='create' action_url=add_one_room_action create_label='Add Room' reload_when_submit_success=True %}
 {% url 'admin_hotel_records_add_multiple_room' tripID=trip.id as add_multiple_room_action %}
 {% include 'admin/modal-form.html' with id='add_multiple_room' title='Add Multiple Room' form=add_multiple_room_form mode='create' action_url=add_multiple_room_action create_label='Add Rooms' reload_when_submit_success=True %}
-{% include 'admin/modal-form.html' with id='edit_room' %}
+{% include 'admin/modal-form.html' with id='edit_room' title='Edit Room' mode='update' update_label='Edit Room' reload_when_submit_success=True %}
 
 {% endblock %}
 

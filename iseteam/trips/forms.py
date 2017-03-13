@@ -127,6 +127,13 @@ class RoomForm(ModelForm):
             'trip': HiddenInput(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(RoomForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            self.fields['capacity'].widget = HiddenInput()
+
+
 ROOMS_CAPACITY_CHOICE = (('{}'.format(i), i) for i in range(1, 11))
 
 

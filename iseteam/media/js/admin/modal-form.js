@@ -1,5 +1,8 @@
 $('body').ready(function(){
     var view = $(this).find('.modal-form-view');
+    $(view).on('loaded.bs.modal', function(){
+        set_view(this);
+    });
     set_view(view);
 });
 

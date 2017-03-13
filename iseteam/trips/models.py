@@ -118,6 +118,10 @@ class Trip(models.Model):
 
         return seats
 
+    @property
+    def rooms(self):
+        return self.room_set.all()
+
 
 class ImageTrip(models.Model):
     file = models.ImageField(upload_to=make_upload_path)
