@@ -9,11 +9,17 @@ ROOM RECORDS | ISE | WE CARE
 {% block scripts %}
 <script>
     $('body').ready(function(){
-        var add_room_trigger = $(this).find('#add_room_trigger');
-        var modal_view = $(this).find('#add_room');
-        $(add_room_trigger).click(function(e){
+        var add_one_room_trigger = $(this).find('#add_one_room_trigger');
+        var modal_one_room_view = $(this).find('#add_one_room');
+        $(add_one_room_trigger).click(function(e){
             e.preventDefault();
-            $(modal_view).modal()
+            $(modal_one_room_view).modal()
+        });
+        var add_one_room_trigger = $(this).find('#add_multiple_room_trigger');
+        var modal_multiple_room_view = $(this).find('#add_multiple_room');
+        $(add_one_room_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_multiple_room_view).modal()
         });
     });
 </script>
@@ -66,11 +72,24 @@ ROOM RECORDS | ISE | WE CARE
     </div>
 
     <div class="row">
-        <div class="col-md-1 col-md-offset-10">
-            <a id="add_room_trigger" class="btn btn-lg btn-success" href="/trips/{{ trip.pk }}/hotelexcel/">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                Add Room
-            </a>
+        <div class = "col-md-1 col-md-offset-10">
+            <div class="btn-group">
+                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add Room <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" id="add_one_room_trigger">
+                            One Room
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="add_multiple_room_trigger">
+                            Multiple Rooms
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 
@@ -120,8 +139,10 @@ ROOM RECORDS | ISE | WE CARE
   <!-- START COPYRIGHT -->
   {% include "admin/footer.html"%}
 </div>
-
-{% include 'admin/modal-form.html' with id='add_room' title='Add Room' form=add_buss_form mode='create' create_label='Add Room' %}
+{% url 'admin_hotel_records_add_one_room' tripID=trip.id as add_one_room_action %}
+{% include 'admin/modal-form.html' with id='add_one_room' title='Add One Room' form=add_room_form mode='create' action_url=add_one_room_action create_label='Add Room' reload_when_submit_success=True %}
+{% url 'admin_hotel_records_add_multiple_room' tripID=trip.id as add_multiple_room_action %}
+{% include 'admin/modal-form.html' with id='add_multiple_room' title='Add Multiple Room' form=add_multiple_room_form mode='create' action_url=add_multiple_room_action create_label='Add Rooms' reload_when_submit_success=True%}
 
 {% endblock %}
 

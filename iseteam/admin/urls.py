@@ -5,7 +5,8 @@ from iseteam.trips.views import (
        )
 
 from iseteam.trips.views import post as new_trip, admin_all_trips, payment_records, hotel_records
-from iseteam.trips.views import bus_records, edit_trip, delete_trip
+from iseteam.trips.views import bus_records, edit_trip, delete_trip, admin_hotel_records_add_one_room, \
+        admin_hotel_records_add_multiple_room
 from iseteam.events.views import admin_all_events, new_event, edit_event, delete_event
 from iseteam.housing.views import housing_records
 from iseteam.airport.views import pickup_records, pickup_records_mty, pickup_records_qro
@@ -26,6 +27,10 @@ urlpatterns = patterns('',
 
         url(r'^trips/payments/(?P<tripID>\d+)/$', payment_records, name="admin_payment_records"),
         url(r'^trips/rooms/(?P<tripID>\d+)/$', hotel_records, name="admin_hotel_records"),
+        url(r'^trips/rooms/(?P<tripID>\d+)/add-one/$', admin_hotel_records_add_one_room,
+            name="admin_hotel_records_add_one_room"),
+        url(r'^trips/rooms/(?P<tripID>\d+)/add-multiple/$', admin_hotel_records_add_multiple_room,
+            name="admin_hotel_records_add_multiple_room"),
         url(r'^trips/buses/(?P<tripID>\d+)/$', bus_records, name="admin_bus_records"),
 
         url(r'^trips/edit-trip/(?P<tripID>\d+)/$', edit_trip, name="admin_edit_trip"),

@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.urlresolvers import reverse
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader, Context
 
@@ -13,7 +14,7 @@ from django.views.generic import DeleteView, ListView
 from django.contrib.auth import authenticate, login
 
 from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm, RoomForm
+from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm
 from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
@@ -390,10 +391,48 @@ def bus(request):
 def hotel_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     rooms = Room.objects.filter(trip=trip)
-    add_buss_form = RoomForm()
+    add_room_form = RoomForm(initial={'trip': trip})
+    add_multiple_room_form = MultipleRoomForm(initial={'trip': trip})
     return render_to_response('admin/trips/rooms.html',
-                              {'rooms': rooms, 'trip': trip, 'add_buss_form': add_buss_form},
+                              {'rooms': rooms, 'trip': trip, 'add_room_form': add_room_form,
+                               'add_multiple_room_form': add_multiple_room_form},
                               context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_one_room(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = RoomForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        room = form.save(commit=False)
+        room.save()
+        action_url = reverse('admin_hotel_records_add_one_room', kwargs={'tripID': tripID})
+        create_label = 'Add Room'
+        title = 'Add One Room'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_multiple_room(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = MultipleRoomForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        rooms = form.save()
+        action_url = reverse('admin_hotel_records_add_multiple_room', kwargs={'tripID': tripID})
+        create_label = 'Add Rooms'
+        title = 'Add Multiple Room'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    print "ERROR"
+    raise Http404("Invalid data provided")
 
 
 @staff_member_required

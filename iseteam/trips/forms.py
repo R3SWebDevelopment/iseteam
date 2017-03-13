@@ -1,5 +1,5 @@
 from django import forms
-from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput,Select
+from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput, Select, HiddenInput
 
 from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room
 
@@ -119,11 +119,43 @@ class TripForm(ModelForm):
 class RoomForm(ModelForm):
     class Meta:
         model = Room
-        exclude = ('trip', 'available_rooms', 'is_full', 'roomates',)
+        exclude = ('available_rooms', 'is_full', 'roomates',)
         widgets = {
-            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
-            'capacity': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1'}),
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'required': True}),
+            'capacity': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1',
+                                         'required': True}),
+            'trip': HiddenInput(),
         }
+
+ROOMS_CAPACITY_CHOICE = (('{}'.format(i), i) for i in range(1, 11))
+
+
+class MultipleRoomForm(ModelForm):
+    qty = forms.CharField(required=True, widget=TextInput(attrs={'placeholder': '', 'class': 'form-control',
+                                                                 'type': 'number', 'min': '1', 'required': True}))
+    capacity_choice = forms.ChoiceField(choices=ROOMS_CAPACITY_CHOICE, label='Capacity',
+                                        widget=Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Room
+        exclude = ('name', 'capacity', 'available_rooms', 'is_full', 'roomates',)
+        widgets = {
+            'trip': HiddenInput(),
+        }
+
+    def save(self, force_insert=False, force_update=False):
+        ids = []
+        data = self.cleaned_data
+        print "DATA: {}".format(data)
+        capacity = data.get('capacity_choice')
+        qty = int(data.get('qty'))
+        trip = data.get('trip')
+        for index in range(qty):
+            name = "Room {} ({})".format(index+1, capacity)
+            room = Room.objects.create(trip=trip, capacity=capacity, name=name)
+            ids.append(room.id)
+        rooms = Room.objects.none() if len(ids) == 0 else Room.objects.filter(id__in=ids)
+        return rooms
 
 
 class HotelCheckInForm(ModelForm):
