@@ -153,13 +153,12 @@ class MultipleRoomForm(ModelForm):
     def save(self, force_insert=False, force_update=False):
         ids = []
         data = self.cleaned_data
-        print "DATA: {}".format(data)
         capacity = data.get('capacity_choice')
         qty = int(data.get('qty'))
         trip = data.get('trip')
         for index in range(qty):
             name = "Room {} ({})".format(index+1, capacity)
-            room = Room.objects.create(trip=trip, capacity=capacity, name=name)
+            room = Room.objects.create(trip=trip, capacity=capacity, name=name, available_rooms=capacity)
             ids.append(room.id)
         rooms = Room.objects.none() if len(ids) == 0 else Room.objects.filter(id__in=ids)
         return rooms

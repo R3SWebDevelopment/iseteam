@@ -257,6 +257,32 @@ class Room(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.available_rooms = self.capacity
+        super(Room, self).save(*args, **kwargs)
+
+    @property
+    def edit_is_allow(self):
+        # Implement method
+        return True
+
+    @property
+    def can_change_roomate(self):
+        return False
+
+    @property
+    def has_occupants(self):
+        if self.is_full or self.available_rooms < self.capacity:
+            return True
+        return False
+
+    @property
+    def can_remove(self):
+        if self.edit_is_allow and not self.has_occupants:
+            return True
+        return False
+
     @property
     def rooms(self):
         return self.room_set.all()

@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -447,13 +448,32 @@ def admin_hotel_records_edit_room(request, tripID, roomID):
     form = RoomForm(request.POST, instance=room) if request.method == 'POST' else RoomForm(instance=room)
     if request.method == 'POST' and form.is_valid():
         form.save()
-    update_label = 'Edit Room'
+    update_label = 'Save Changes'
     title = 'Edit Room'
     action_url = reverse('admin_hotel_records_edit_room', kwargs={'tripID': tripID, 'roomID': roomID})
     return render_to_response('admin/modal-inner-form.html',
                               {'form': form, 'action_url': action_url, 'update_label': update_label,
                                'mode': 'update', 'title': title, 'reload_when_submit_success': True},
                               context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_remove_room(request, tripID, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    rooms = trip.rooms
+    room = rooms.filter(pk=roomID).first() if rooms.exists() else None
+
+    if room is None:
+        raise Http404("Room does not exists")
+
+    if not room.can_remove:
+        raise Http404("Room can not be removed")
+
+    room.delete()
+    url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
 
 @staff_member_required
 @login_required(login_url='/login/')

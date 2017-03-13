@@ -120,10 +120,20 @@ ROOM RECORDS | ISE | WE CARE
                 <h4>Room {{ room }}</h4>
             </div>
             <div class = "col-md-6">
+            {% if room.edit_is_allow %}
                 <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
                     <span class="glyphicon glyphicon glyphicon-pencil"></span>
                     Edit
                 </button>
+            {% endif %}
+            {% if room.can_remove %}
+                <a href="{% url 'admin_hotel_records_remove_room' tripID=trip.id roomID=room.id  %}">
+                    <button type="button" class="btn btn-danger btn-sm pull-right">
+                        <span class="glyphicon glyphicon glyphicon-trash"></span>
+                        Remove
+                    </button>
+                </a>
+            {% endif %}
             </div>
             <table class="table table-hover text-left" style="margin-top:30px">
                 <thead>
@@ -131,6 +141,7 @@ ROOM RECORDS | ISE | WE CARE
                     <th>#</th>
                     <th>Name</th>
                     <th>Last Name</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -139,6 +150,25 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ forloop.counter}}</td>
                     <td>{{ roomate.payment.name }}</td>
                     <td>{{ roomate.payment.last_name }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Move to Other Room ... <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#" id="add_one_room_trigger">
+                                        One Room
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" id="add_multiple_room_trigger">
+                                        Multiple Rooms
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
                   </tr>
                     {% endfor %}
                 </tbody>
