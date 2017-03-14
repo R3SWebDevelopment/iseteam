@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db import transaction
 
 from autoslug import AutoSlugField
 
@@ -121,6 +123,16 @@ class Trip(models.Model):
     @property
     def rooms(self):
         return self.room_set.all()
+
+    @property
+    def rooms_with_available_capacity(self):
+        rooms = self.rooms
+        rooms = rooms.filter(available_rooms__gte=1) if rooms.exists() else rooms
+        return rooms
+
+    @property
+    def confirmations(self):
+        return Confirmation.objects.filter(id__in=[c.get('roomates__id') for c in self.rooms.values('roomates__id')])
 
 
 class ImageTrip(models.Model):
@@ -269,6 +281,8 @@ class Room(models.Model):
 
     @property
     def can_change_roomate(self):
+        if self.edit_is_allow:
+            return True
         return False
 
     @property
@@ -283,14 +297,39 @@ class Room(models.Model):
             return True
         return False
 
-    @property
-    def rooms(self):
-        return self.room_set.all()
+    def add_roomate(self, confirmation):
+        if self.is_full:
+            raise ValidationError('The room is full')
+        self.roomates.add(confirmation)
+        self.available_rooms -= 1
+        self.save()
+        confirmation.has_room = True
+        confirmation.save()
+        self.figure_room_availability()
 
-    @property
-    def rooms_with_available_rooms(self):
-        rooms = self.rooms
-        return rooms if rooms.exists() else rooms.filter(available_rooms__gte=1)
+    def figure_room_availability(self):
+        if self.available_rooms <= 0:
+            self.is_full = True
+        else:
+            self.is_full = False
+        self.save()
+
+    def move_to(self, confirmation, room):
+        if self.edit_is_allow:
+            try:
+                with transaction.atomic():
+                    self.roomates.remove(confirmation)
+                    self.available_rooms += 1
+                    self.save()
+                    self.figure_room_availability()
+                    confirmation.has_room = False
+                    confirmation.save()
+                    self.figure_room_availability()
+                    room.add_roomate(confirmation)
+            except ValidationError, ve:
+                raise ve
+        else:
+            raise ValidationError('This Room can be Edit')
 
 
 class CardPayment(models.Model):

@@ -112,7 +112,7 @@ ROOM RECORDS | ISE | WE CARE
 
         <div class="col-md-8 col-md-offset-2">
 
-
+        {% with trip.rooms_with_available_capacity as available_rooms %}
             {% for room in rooms %}
 
 
@@ -151,23 +151,24 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ roomate.payment.name }}</td>
                     <td>{{ roomate.payment.last_name }}</td>
                     <td>
+                    {% if room.can_change_roomate and available_rooms|length > 0 %}
                         <div class="btn-group">
                             <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Move to Other Room ... <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
+                        {% for available_room in available_rooms %}
+                            {% if available_room.id  != room.id %}
                                 <li>
-                                    <a href="#" id="add_one_room_trigger">
-                                        One Room
+                                    <a href="{% url 'admin_hotel_records_move_to' tripID=trip.id confirmation=roomate.id roomID=available_room.id %}" id="add_one_room_trigger">
+                                        {{ available_room }} ({{ available_room.available_rooms }} of {{ available_room.capacity }} left)
                                     </a>
                                 </li>
-                                <li>
-                                    <a href="#" id="add_multiple_room_trigger">
-                                        Multiple Rooms
-                                    </a>
-                                </li>
+                            {% endif %}
+                        {% endfor %}
                             </ul>
                         </div>
+                    {% endif %}
                     </td>
                   </tr>
                     {% endfor %}
@@ -175,6 +176,7 @@ ROOM RECORDS | ISE | WE CARE
             </table>
 
             {% endfor %}
+        {% endwith %}
         </div>
 
 

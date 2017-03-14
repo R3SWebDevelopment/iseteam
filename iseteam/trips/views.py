@@ -352,8 +352,8 @@ def hotel(request, tripID, confirmation, roomID):
         confirmation.has_room = True
         room.save()
         confirmation.save()
-        if room.available_rooms <=0:
-            room.is_full=True
+        if room.available_rooms <= 0:
+            room.is_full = True
             room.save()
             hotel_mail(roomID)
         return HttpResponse(json.dumps({'done': 'yes', 'room': room.name,
@@ -474,6 +474,30 @@ def admin_hotel_records_remove_room(request, tripID, roomID):
     url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
     return redirect(url)
 
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_move_to(self, tripID, confirmation, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    rooms = trip.rooms
+    room = rooms.filter(pk=roomID).first() if rooms.exists() else None
+
+    if room is None:
+        raise Http404("Room does not exists")
+
+    confirmations = trip.confirmations
+
+    confirmation = confirmations.filter(id=confirmation).first() if confirmations.exists() else None
+
+    if confirmation is None:
+        raise Http404("Confirmation does not exists")
+
+    original_room = confirmation.room_set.first()
+    if original_room is None:
+        raise Http404("Original Room does not exists")
+    original_room.move_to(confirmation, room)
+    url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
+    return redirect(url)
 
 @staff_member_required
 @login_required(login_url='/login/')
