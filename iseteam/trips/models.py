@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import transaction
+import datetime
 
 from autoslug import AutoSlugField
 
@@ -66,6 +67,13 @@ class Trip(models.Model):
     buses = models.ManyToManyField(Bus)
     slug = AutoSlugField(populate_from='name', max_length=255, unique_with='date')
     is_full = models.BooleanField(default=False)
+
+    @property
+    def edit_is_allow(self):
+        now = datetime.datetime.now()
+        if self.date >= now.date():
+            return True
+        return False
 
     def __unicode__(self):
         return u'%s' % self.name
@@ -276,8 +284,7 @@ class Room(models.Model):
 
     @property
     def edit_is_allow(self):
-        # Implement method
-        return True
+        return self.trip.edit_is_allow if self.trip is not None else False
 
     @property
     def can_change_roomate(self):

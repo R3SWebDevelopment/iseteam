@@ -85,6 +85,7 @@ ROOM RECORDS | ISE | WE CARE
 
     <div class="row">
         <div class = "col-md-1 col-md-offset-10">
+        {% if trip.edit_is_allow %}
             <div class="btn-group">
                 <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Add Room <span class="caret"></span>
@@ -102,6 +103,7 @@ ROOM RECORDS | ISE | WE CARE
                     </li>
                 </ul>
             </div>
+        {% endif %}
         </div>
     </div>
 
