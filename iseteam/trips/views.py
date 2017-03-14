@@ -802,10 +802,10 @@ def confirmation_mail(payment, code):
     subject1 = 'ISE | CONFIRMATION NUMBER OF %s' % payment.trip.name.upper()
     context_render = {'confirmation': code}
     template1 = 'emails/payconfirmation.html'
-    Email([to1, 'kayethano@gmail.com', ], subject1, context_render, template1).send()  # Why hard coded email address
+    Email([to1, ], subject1, context_render, template1).send()
 
 
-def bus_mail(confirmation,bus):
+def bus_mail(confirmation, bus):
     to = confirmation.payment.email
     subject = 'ISE | BUS CHECK-IN IS DONE TO %s' % confirmation.payment.trip.name.upper()
     context_render = {'confirmation': confirmation, 'bus': bus}
