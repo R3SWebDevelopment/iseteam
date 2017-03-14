@@ -567,6 +567,55 @@ def admin_hotel_records_remove_bus(request, tripID, busID):
 
 @staff_member_required
 @login_required(login_url='/login/')
+def admin_hotel_records_edit_bus(request, tripID, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    form = BusForm(request.POST, instance=bus,  initial={'trip': trip}) \
+        if request.method == 'POST' else BusForm(instance=bus,  initial={'trip': trip})
+    if request.method == 'POST' and form.is_valid():
+        print "SAVE"
+        form.save()
+    update_label = 'Save Changes'
+    title = 'Edit Bus'
+    action_url = reverse('admin_hotel_records_edit_bus', kwargs={'tripID': tripID, 'busID': busID})
+    return render_to_response('admin/modal-inner-form.html',
+                              {'form': form, 'action_url': action_url, 'update_label': update_label,
+                               'mode': 'update', 'title': title, 'reload_when_submit_success': True},
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_move_to(self, tripID, seat, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    seats_confirmed = trip.seats_confirmed
+
+    seat_confirmed = seats_confirmed.filter(id=seat).first() if seats_confirmed.exists() else None
+
+    if seat_confirmed is None:
+        raise Http404("Seat Confirmation does not exists")
+
+    original_bus = seat_confirmed.bus
+    if original_bus is None:
+        raise Http404("Original Bus does not exists")
+    seat_confirmed.move_to(bus)
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
+
+@staff_member_required
+@login_required(login_url='/login/')
 def manage_buses(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     buses = trip.buses.all()
@@ -589,7 +638,6 @@ def add_bus(request, tripID):
     return render_to_response('admin/trips/add_bus.html',
                               {'form': form},
                               context_instance=RequestContext(request))
-
 
 
 @staff_member_required
@@ -787,6 +835,7 @@ def pay_trip(request, paymentID):
     response = {'success': 'true', 'confirmation': payment.confirmation.code, 'client': payment.get_full_name()}
 
     return HttpResponse(json.dumps(response))
+
 
 @staff_member_required
 @login_required(login_url='/login/')

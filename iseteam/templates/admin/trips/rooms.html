@@ -162,7 +162,7 @@ ROOM RECORDS | ISE | WE CARE
                         {% for available_room in available_rooms %}
                             {% if available_room.id  != room.id %}
                                 <li>
-                                    <a href="{% url 'admin_hotel_records_move_to' tripID=trip.id confirmation=roomate.id roomID=available_room.id %}" id="add_one_room_trigger">
+                                    <a href="{% url 'admin_hotel_records_move_to' tripID=trip.id confirmation=roomate.id roomID=available_room.id %}">
                                         {{ available_room }} ({{ available_room.available_rooms }} of {{ available_room.capacity }} left)
                                     </a>
                                 </li>

@@ -58,7 +58,6 @@ class Bus(models.Model):
 
     @property
     def edit_is_allow(self):
-        print "HOLA"
         trip = self.trips.first()
         return trip.edit_is_allow if trip is not None else False
 
@@ -77,7 +76,6 @@ class Bus(models.Model):
 
     @property
     def can_remove(self):
-        print "REMOVE"
         if self.edit_is_allow and not self.has_occupants:
             return True
         return False
@@ -85,6 +83,26 @@ class Bus(models.Model):
     @property
     def trips(self):
         return self.trip_set.all()
+
+    @property
+    def seats(self):
+        return self.buscheckin_set.all()
+
+    @property
+    def can_change_roomate(self):
+        if self.edit_is_allow:
+            return True
+        return False
+
+    def add_occupant(self):
+        self.available_seats -= 1
+        self.save()
+        self.figure_bus_availability()
+
+    def remove_occupant(self):
+        self.available_seats += 1
+        self.save()
+        self.figure_bus_availability()
 
 
 class Trip(models.Model):
@@ -149,7 +167,13 @@ class Trip(models.Model):
 
     @property
     def get_buses(self):
-        return self.buses.all()
+        return self.buses.all().order_by('name')
+
+    @property
+    def buses_with_available_seat(self):
+        buses = self.get_buses
+        buses = buses.filter(available_seats__gte=1) if buses.exists() else buses
+        return buses
 
     def remove_bus(self, bus):
         self.buses.remove(bus)
@@ -188,6 +212,10 @@ class Trip(models.Model):
 
     def add_bus(self, bus):
         self.buses.add(bus)
+
+    @property
+    def seats_confirmed(self):
+        return self.buscheckin_set.all()
 
 
 class ImageTrip(models.Model):
@@ -263,6 +291,18 @@ class BusCheckIn(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.name
+
+    def move_to(self, bus):
+        if bus.edit_is_allow:
+            if bus.available_seats >= 1:
+                self.bus.remove_occupant()
+                self.bus = bus
+                self.save()
+                bus.add_occupant()
+            else:
+                raise ValidationError('This Bus does not have available seats')
+        else:
+            raise ValidationError('This Bus can be Edit')
 
 
 class PayTrip(models.Model):

@@ -24,17 +24,17 @@ ROOM RECORDS | ISE | WE CARE
             $(modal_multiple_bus_view).modal()
         });
 
-        var edit_room_trigger = $(this).find('.edit_room_trigger');
-        var modal_edit_room_view = $(this).find('#edit_room');
-        $(edit_room_trigger).click(function(e){
+        var edit_bus_trigger = $(this).find('.edit_bus_trigger');
+        var modal_edit_bus_view = $(this).find('#edit_bus');
+        $(edit_bus_trigger).click(function(e){
             e.preventDefault();
             var url = $(this).data('url');
-            $(modal_edit_room_view).modal('hide');  // Hide in case it still been showing
-            $(modal_edit_room_view).removeData('bs.modal');  // Remove any posible data remaing
-            $(modal_edit_room_view).modal({
+            $(modal_edit_bus_view).modal('hide');  // Hide in case it still been showing
+            $(modal_edit_bus_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_edit_bus_view).modal({
                 'remote': url
             });
-            $(modal_edit_room_view).modal('show');
+            $(modal_edit_bus_view).modal('show');
         });
     });
 </script>
@@ -113,15 +113,15 @@ ROOM RECORDS | ISE | WE CARE
     <div class="row">
 
         <div class="col-md-8 col-md-offset-2">
-
+        {% with trip.buses_with_available_seat as available_buses %}
             {% for bus in buses %}
 
             <div class = "col-md-6">
                 <h1>{{ bus }}</h1>
             </div>
             <div class = "col-md-6">
-            {% if bus.edit_is_allow and False %}
-                <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
+            {% if bus.edit_is_allow %}
+                <button type="button" class="edit_bus_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_bus' tripID=trip.id busID=bus.id %}">
                     <span class="glyphicon glyphicon glyphicon-pencil"></span>
                     Edit
                 </button>
@@ -142,6 +142,7 @@ ROOM RECORDS | ISE | WE CARE
                     <th>Full Name</th>
                     <th>Confirmation Code</th>
                     <th>Record Date</th>
+                    <th></th>
                 </thead>
                 <tbody>
                 {% for seat in bus.seats %}
@@ -150,12 +151,33 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ seat.name|title }} {{ seat.last_name|title }}</td>
                     <td>{{ seat.confirmation }}</td>
                     <td>{{ seat.timestamp}}</td>
+                    <td>
+                    {% if bus.can_change_roomate and available_buses|length > 0 %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Move to Other Bus ... <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                        {% for available_bus in available_buses %}
+                            {% if available_bus.id  != bus.id %}
+                                <li>
+                                    <a href="{% url 'admin_bus_records_move_to' tripID=trip.id seat=seat.id busID=available_bus.id %}">
+                                        {{ available_bus }} ({{ available_bus.available_seats }} of {{ available_bus.total_seats }} left)
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
                 </tbody>
             </table>
 
             {% endfor %}
+        {% endwith %}
 
         </div>
 
@@ -170,6 +192,7 @@ ROOM RECORDS | ISE | WE CARE
 {% include 'admin/modal-form.html' with id='add_one_bus' title='Add One Bus' form=add_bus_form mode='create' action_url=add_one_bus_action create_label='Add Bus' reload_when_submit_success=True %}
 {% url 'admin_hotel_records_add_multiple_bus' tripID=trip.id as add_multiple_bus_action %}
 {% include 'admin/modal-form.html' with id='add_multiple_bus' title='Add Multiple Buses' form=add_multiple_bus_form mode='create' action_url=add_multiple_bus_action create_label='Add Buses' reload_when_submit_success=True %}
+{% include 'admin/modal-form.html' with id='edit_bus' title='Edit Bus' mode='update' update_label='Edit Bus' reload_when_submit_success=True %}
 
 {% endblock %}
 
