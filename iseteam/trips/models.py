@@ -51,6 +51,28 @@ class Bus(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.available_seats = self.total_seats
+        super(Bus, self).save(*args, **kwargs)
+
+    @property
+    def edit_is_allow(self):
+        return self.trip.edit_is_allow if self.trip is not None else False
+
+    def figure_bus_availability(self):
+        if self.available_seats <= 0:
+            self.is_full = True
+        else:
+            self.is_full = False
+        self.save()
+
+    @property
+    def has_occupants(self):
+        if self.is_full or self.available_seats < self.total_seats:
+            return True
+        return False
+
 
 class Trip(models.Model):
     city = models.CharField(max_length=255, choices=CITY_CHOICES, default='Mty')
@@ -141,6 +163,9 @@ class Trip(models.Model):
     @property
     def confirmations(self):
         return Confirmation.objects.filter(id__in=[c.get('roomates__id') for c in self.rooms.values('roomates__id')])
+
+    def add_bus(self, bus):
+        self.buses.add(bus)
 
 
 class ImageTrip(models.Model):

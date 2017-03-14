@@ -19,7 +19,7 @@ DATABASES = {
     }
 }
 
-#IseTeamDev Facebook Settings
+# IseTeamDev Facebook Settings
 FACEBOOK_APP_ID = '825938124180584'
 FACEBOOK_APP_SECRET = '3eeeb5be7561be905a1b8bdc45e97346' 
 

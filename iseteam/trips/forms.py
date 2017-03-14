@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput, Select, HiddenInput
 
-from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room
+from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room, Bus
 
 from django.utils.translation import ugettext_lazy as _  # Are you using Translation on the entire project?
 from django.contrib.auth.models import User
@@ -114,6 +114,73 @@ class TripForm(ModelForm):
             'brief': Textarea(attrs={'placeholder': '', 'class': 'form-control', 'style': 'height:100px'}),
             'description': Textarea(attrs={'placeholder': 'Type here...', 'class': 'wysiwyg demo-form-wysiwyg'}),
         }
+
+
+class BusForm(ModelForm):
+    trip = forms.ModelChoiceField(queryset=Trip.objects.all(),
+                                  widget=HiddenInput())
+
+    class Meta:
+        model = Bus
+        exclude = ('available_seats', 'is_full')
+        widgets = {
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'required': True}),
+            'total_seats': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1',
+                                            'required': True}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(BusForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            self.fields['total_seats'].widget = HiddenInput()
+
+    def save(self, force_insert=False, force_update=False):
+        bus = super(BusForm, self).save()
+        data = self.cleaned_data
+        trip = data.get('trip')
+        trip.add_bus(bus)
+        return bus
+
+BUS_SEATS_CHOICE = (
+    ('35', 25),
+    ('36', 36),
+    ('38', 38),
+    ('39', 39),
+    ('41', 41),
+    ('43', 43),
+    ('44', 44),
+    ('45', 45),
+    ('48', 48),
+    ('50', 50),
+)
+
+
+class MultipleBusForm(ModelForm):
+    trip = forms.ModelChoiceField(queryset=Trip.objects.all(),
+                                  widget=HiddenInput())
+    qty = forms.CharField(required=True, widget=TextInput(attrs={'placeholder': '', 'class': 'form-control',
+                                                                 'type': 'number', 'min': '1', 'required': True}))
+    seats_choice = forms.ChoiceField(choices=BUS_SEATS_CHOICE, label='Seats',
+                                     widget=Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Bus
+        exclude = ('name', 'available_seats', 'is_full', 'total_seats')
+
+    def save(self, force_insert=False, force_update=False):
+        ids = []
+        data = self.cleaned_data
+        total_seats = data.get('seats_choice')
+        qty = int(data.get('qty'))
+        trip = data.get('trip')
+        for index in range(qty):
+            name = "Bus {} ({})".format(index+1, total_seats)
+            bus = Bus.objects.create(name=name, total_seats=total_seats)
+            trip.add_bus(bus)
+            ids.append(bus.id)
+        buses = Bus.objects.none() if len(ids) == 0 else Bus.objects.filter(id__in=ids)
+        return buses
 
 
 class RoomForm(ModelForm):

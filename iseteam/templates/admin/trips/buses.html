@@ -7,6 +7,37 @@ ROOM RECORDS | ISE | WE CARE
 {% block css %}
 {% endblock %}
 {% block scripts %}
+<script>
+    $('body').ready(function(){
+        var add_one_bus_trigger = $(this).find('#add_one_bus_trigger');
+        var modal_one_bus_view = $(this).find('#add_one_bus');
+        $(add_one_bus_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_one_bus_view).modal()
+        });
+
+
+        var add_multiple_bus_trigger = $(this).find('#add_multiple_bus_trigger');
+        var modal_multiple_bus_view = $(this).find('#add_multiple_bus');
+        $(add_multiple_bus_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_multiple_bus_view).modal()
+        });
+
+        var edit_room_trigger = $(this).find('.edit_room_trigger');
+        var modal_edit_room_view = $(this).find('#edit_room');
+        $(edit_room_trigger).click(function(e){
+            e.preventDefault();
+            var url = $(this).data('url');
+            $(modal_edit_room_view).modal('hide');  // Hide in case it still been showing
+            $(modal_edit_room_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_edit_room_view).modal({
+                'remote': url
+            });
+            $(modal_edit_room_view).modal('show');
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -55,6 +86,29 @@ ROOM RECORDS | ISE | WE CARE
       </div>
     </div>
 
+    <div class="row">
+        <div class = "col-md-1 col-md-offset-10">
+        {% if trip.edit_is_allow %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add Bus <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" id="add_one_bus_trigger">
+                            One Bus
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="add_multiple_bus_trigger">
+                            Multiple Buses
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+        </div>
+    </div>
 
     <div class="row">
 
@@ -94,7 +148,10 @@ ROOM RECORDS | ISE | WE CARE
   <!-- START COPYRIGHT -->
   {% include "admin/footer.html"%}
 </div>
-
+{% url 'admin_bus_records_add_one_bus' tripID=trip.id as add_one_bus_action %}
+{% include 'admin/modal-form.html' with id='add_one_bus' title='Add One Bus' form=add_bus_form mode='create' action_url=add_one_bus_action create_label='Add Bus' reload_when_submit_success=True %}
+{% url 'admin_hotel_records_add_multiple_bus' tripID=trip.id as add_multiple_bus_action %}
+{% include 'admin/modal-form.html' with id='add_multiple_bus' title='Add Multiple Buses' form=add_multiple_bus_form mode='create' action_url=add_multiple_bus_action create_label='Add Buses' reload_when_submit_success=True %}
 
 {% endblock %}
 

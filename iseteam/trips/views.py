@@ -15,7 +15,7 @@ from django.views.generic import DeleteView, ListView
 from django.contrib.auth import authenticate, login
 
 from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm
+from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm
 from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
@@ -499,14 +499,52 @@ def admin_hotel_records_move_to(self, tripID, confirmation, roomID):
     url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
     return redirect(url)
 
+
 @staff_member_required
 @login_required(login_url='/login/')
 def bus_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     buses = trip.get_buses_grouped()
+    add_bus_form = BusForm(initial={'trip': trip})
+    add_multiple_bus_form = MultipleBusForm(initial={'trip': trip})
     return render_to_response('admin/trips/buses.html',
-                              {'buses': buses, 'trip': trip},
+                              {'buses': buses, 'trip': trip, 'add_bus_form': add_bus_form,
+                               'add_multiple_bus_form': add_multiple_bus_form},
                               context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_add_one_bus(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = BusForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        room = form.save()
+        action_url = reverse('admin_bus_records_add_one_bus', kwargs={'tripID': tripID})
+        create_label = 'Add Bus'
+        title = 'Add One Bus'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_multiple_bus(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = MultipleBusForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        buses = form.save()
+        action_url = reverse('admin_hotel_records_add_multiple_bus', kwargs={'tripID': tripID})
+        create_label = 'Add Buses'
+        title = 'Add Multiple Buses'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
 
 
 @staff_member_required
