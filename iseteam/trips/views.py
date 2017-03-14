@@ -209,6 +209,7 @@ def pay(request, trip):
             to = settings.STAFF_EMAIL
             context_render = {'pay': payment}
             subject = 'ISE | Someone has purchased a trip.'
+
             template = 'emails/paytrip_staff.html'
             Email(to,subject,context_render,template).send()
 
@@ -588,7 +589,6 @@ def admin_hotel_records_edit_bus(request, tripID, busID):
                                'mode': 'update', 'title': title, 'reload_when_submit_success': True},
                               context_instance=RequestContext(request))
 
-
 @staff_member_required
 @login_required(login_url='/login/')
 def admin_bus_records_move_to(self, tripID, seat, busID):
@@ -836,6 +836,7 @@ def pay_trip(request, paymentID):
 
     return HttpResponse(json.dumps(response))
 
+    return HttpResponse(json.dumps(response))
 
 @staff_member_required
 @login_required(login_url='/login/')
