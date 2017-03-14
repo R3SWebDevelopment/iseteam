@@ -116,7 +116,25 @@ ROOM RECORDS | ISE | WE CARE
 
             {% for bus in buses %}
 
-            <h1>{{ bus.bus }}</h1>
+            <div class = "col-md-6">
+                <h1>{{ bus }}</h1>
+            </div>
+            <div class = "col-md-6">
+            {% if bus.edit_is_allow and False %}
+                <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
+                    <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                    Edit
+                </button>
+            {% endif %}
+            {% if bus.can_remove %}
+                <a href="{% url 'admin_hotel_records_remove_bus' tripID=trip.id busID=bus.id  %}">
+                    <button type="button" class="btn btn-danger btn-sm pull-right">
+                        <span class="glyphicon glyphicon glyphicon-trash"></span>
+                        Remove
+                    </button>
+                </a>
+            {% endif %}
+            </div>
             <table class="table table-hover text-left" style="margin-top:30px">
                 <thead>
                 <tr class="warning">

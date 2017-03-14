@@ -58,7 +58,9 @@ class Bus(models.Model):
 
     @property
     def edit_is_allow(self):
-        return self.trip.edit_is_allow if self.trip is not None else False
+        print "HOLA"
+        trip = self.trips.first()
+        return trip.edit_is_allow if trip is not None else False
 
     def figure_bus_availability(self):
         if self.available_seats <= 0:
@@ -72,6 +74,17 @@ class Bus(models.Model):
         if self.is_full or self.available_seats < self.total_seats:
             return True
         return False
+
+    @property
+    def can_remove(self):
+        print "REMOVE"
+        if self.edit_is_allow and not self.has_occupants:
+            return True
+        return False
+
+    @property
+    def trips(self):
+        return self.trip_set.all()
 
 
 class Trip(models.Model):
@@ -133,6 +146,15 @@ class Trip(models.Model):
 
     def get_cover_url(self):
         return str(self.cover.url).split("?")[0]
+
+    @property
+    def get_buses(self):
+        return self.buses.all()
+
+    def remove_bus(self, bus):
+        self.buses.remove(bus)
+        if not bus.trips.exists():
+            bus.delete()
 
     def get_buses_grouped(self):
         from iseteam.trips.models import BusCheckIn  # Why not in the head of the file as all imports?

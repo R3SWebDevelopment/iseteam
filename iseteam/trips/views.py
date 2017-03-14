@@ -504,7 +504,7 @@ def admin_hotel_records_move_to(self, tripID, confirmation, roomID):
 @login_required(login_url='/login/')
 def bus_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
-    buses = trip.get_buses_grouped()
+    buses = trip.get_buses
     add_bus_form = BusForm(initial={'trip': trip})
     add_multiple_bus_form = MultipleBusForm(initial={'trip': trip})
     return render_to_response('admin/trips/buses.html',
@@ -545,6 +545,24 @@ def admin_hotel_records_add_multiple_bus(request, tripID):
                                    'mode': 'create', 'title': title, 'reload_when_submit_success': True},
                                   context_instance=RequestContext(request))
     raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_remove_bus(request, tripID, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    if not bus.can_remove:
+        raise Http404("Bus can not be removed")
+
+    trip.remove_bus(bus)
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
 
 
 @staff_member_required
