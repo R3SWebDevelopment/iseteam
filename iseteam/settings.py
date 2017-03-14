@@ -206,7 +206,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'info@isefamily.com'
 
-STAFF_EMAIL = ('kayethano@gmail.com','info@isefamily.com')
+STAFF_EMAIL = ('info@isefamily.com',)
 
 LOGIN_REDIRECT_URL = '/admin/trips/all-trips/'
 

@@ -1,12 +1,12 @@
 from django import forms
-from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput,Select
+from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput, Select, HiddenInput
 
-from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip
+from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room, Bus
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _  # Are you using Translation on the entire project?
 from django.contrib.auth.models import User
 
-attrs_dict = {'class': 'required form-control',}
+attrs_dict = {'class': 'required form-control', }
 
 
 class LogInForm(forms.Form):
@@ -14,10 +14,11 @@ class LogInForm(forms.Form):
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_("Username"),
-                                error_messages={'invalid': _("This value must contain only letters, numbers and underscores.")})
+                                error_messages={
+                                    'invalid': _("This value must contain only letters, numbers and underscores.")
+                                })
     password = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
-                                label=_("Password"))
-
+                               label=_("Password"))
 
 
 class SignUpForm(forms.Form):
@@ -36,13 +37,14 @@ class SignUpForm(forms.Form):
     first_name = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
     last_name = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
 
-
     username = forms.RegexField(regex=r'^\w+$',
                                 max_length=30,
                                 widget=forms.TextInput(attrs=attrs_dict),
                                 label=_("Username"),
-                                error_messages={'invalid': _("This value must contain only letters, numbers and underscores.")})
-    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,
+                                error_messages={
+                                    'invalid': _("This value must contain only letters, numbers and underscores.")
+                                })
+    email = forms.EmailField(widget=forms.TextInput(attrs=dict(attrs_dict,  # Look into this
                                                                maxlength=75)),
                              label=_("Email address"))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
@@ -50,14 +52,12 @@ class SignUpForm(forms.Form):
     password2 = forms.CharField(widget=forms.PasswordInput(attrs=attrs_dict, render_value=False),
                                 label=_("Password (again)")),
 
-    #Normal Info
-    university = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
-    age = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
-    gender = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
-    country = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))
+    # Normal Info
+    university = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))  # Look into this
+    age = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))  # Look into this
+    gender = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))  # Look into this
+    country = forms.CharField(widget=forms.TextInput(attrs=dict(attrs_dict)))  # Look into this
 
-
-    
     def clean_username(self):
         """
         Validate that the username is alphanumeric and is not already
@@ -83,7 +83,6 @@ class SignUpForm(forms.Form):
                 raise forms.ValidationError(_("The two password fields didn't match."))
         return self.cleaned_data
 
-
     def clean_email(self):
         """
         Validate that the supplied email address is unique for the
@@ -91,57 +90,166 @@ class SignUpForm(forms.Form):
         
         """
         if User.objects.filter(email__iexact=self.cleaned_data['email']):
-            raise forms.ValidationError(_("This email address is already in use. Please supply a different email address."))
+            raise forms.ValidationError(
+                _("This email address is already in use. Please supply a different email address.")
+            )
         return self.cleaned_data['email']
 
 
-
 class TripForm(ModelForm):
-	class Meta:
-		model = Trip
-		exclude = ('slug','is_full')
-		widgets = {
-		    'city' : Select(attrs={'placeholder':'', 'class':'form-control'}),
-			'name' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'date' : TextInput(attrs={'placeholder':'', 'class':' datepicker form-control'}),
-			'price_presale' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'price_sale' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'buses' : SelectMultiple(attrs={'placeholder':'', 'class':'form-control'}),
-			'tickets' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'facebook' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'video' : TextInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'cover' : FileInput(attrs={'placeholder':'', 'class':'form-control'}),
-			'brief' : Textarea(attrs={'placeholder':'','class':'form-control','style':'height:100px'}),
-			'description' : Textarea(attrs={'placeholder':'Type here...','class':'wysiwyg demo-form-wysiwyg'}),
-		}
+    class Meta:
+        model = Trip
+        exclude = ('slug', 'is_full')
+        widgets = {
+            'city': Select(attrs={'placeholder': '', 'class': 'form-control'}),
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'date': TextInput(attrs={'placeholder': '', 'class': 'datepicker form-control'}),
+            'price_presale': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'price_sale': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'buses': SelectMultiple(attrs={'placeholder': '', 'class': 'form-control'}),
+            'tickets': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'facebook': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'video': TextInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'cover': FileInput(attrs={'placeholder': '', 'class': 'form-control'}),
+            'brief': Textarea(attrs={'placeholder': '', 'class': 'form-control', 'style': 'height:100px'}),
+            'description': Textarea(attrs={'placeholder': 'Type here...', 'class': 'wysiwyg demo-form-wysiwyg'}),
+        }
+
+
+class BusForm(ModelForm):
+    trip = forms.ModelChoiceField(queryset=Trip.objects.all(),
+                                  widget=HiddenInput())
+
+    class Meta:
+        model = Bus
+        exclude = ('available_seats', 'is_full')
+        widgets = {
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'required': True}),
+            'total_seats': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1',
+                                            'required': True}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(BusForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            self.fields['total_seats'].widget = HiddenInput()
+
+    def save(self, force_insert=False, force_update=False):
+        bus = super(BusForm, self).save()
+        data = self.cleaned_data
+        trip = data.get('trip')
+        trip.add_bus(bus)
+        return bus
+
+BUS_SEATS_CHOICE = (
+    ('35', 25),
+    ('36', 36),
+    ('38', 38),
+    ('39', 39),
+    ('41', 41),
+    ('43', 43),
+    ('44', 44),
+    ('45', 45),
+    ('48', 48),
+    ('50', 50),
+)
+
+
+class MultipleBusForm(ModelForm):
+    trip = forms.ModelChoiceField(queryset=Trip.objects.all(),
+                                  widget=HiddenInput())
+    qty = forms.CharField(required=True, widget=TextInput(attrs={'placeholder': '', 'class': 'form-control',
+                                                                 'type': 'number', 'min': '1', 'required': True}))
+    seats_choice = forms.ChoiceField(choices=BUS_SEATS_CHOICE, label='Seats',
+                                     widget=Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Bus
+        exclude = ('name', 'available_seats', 'is_full', 'total_seats')
+
+    def save(self, force_insert=False, force_update=False):
+        ids = []
+        data = self.cleaned_data
+        total_seats = data.get('seats_choice')
+        qty = int(data.get('qty'))
+        trip = data.get('trip')
+        for index in range(qty):
+            name = "Bus {} ({})".format(index+1, total_seats)
+            bus = Bus.objects.create(name=name, total_seats=total_seats)
+            trip.add_bus(bus)
+            ids.append(bus.id)
+        buses = Bus.objects.none() if len(ids) == 0 else Bus.objects.filter(id__in=ids)
+        return buses
+
+
+class RoomForm(ModelForm):
+    class Meta:
+        model = Room
+        exclude = ('available_rooms', 'is_full', 'roomates',)
+        widgets = {
+            'name': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'required': True}),
+            'capacity': TextInput(attrs={'placeholder': '', 'class': 'form-control', 'type': 'number', 'min': '1',
+                                         'required': True}),
+            'trip': HiddenInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(RoomForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            self.fields['capacity'].widget = HiddenInput()
+
+
+ROOMS_CAPACITY_CHOICE = (('{}'.format(i), i) for i in range(1, 11))
+
+
+class MultipleRoomForm(ModelForm):
+    qty = forms.CharField(required=True, widget=TextInput(attrs={'placeholder': '', 'class': 'form-control',
+                                                                 'type': 'number', 'min': '1', 'required': True}))
+    capacity_choice = forms.ChoiceField(choices=ROOMS_CAPACITY_CHOICE, label='Capacity',
+                                        widget=Select(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = Room
+        exclude = ('name', 'capacity', 'available_rooms', 'is_full', 'roomates',)
+        widgets = {
+            'trip': HiddenInput(),
+        }
+
+    def save(self, force_insert=False, force_update=False):
+        ids = []
+        data = self.cleaned_data
+        capacity = data.get('capacity_choice')
+        qty = int(data.get('qty'))
+        trip = data.get('trip')
+        for index in range(qty):
+            name = "Room {} ({})".format(index+1, capacity)
+            room = Room.objects.create(trip=trip, capacity=capacity, name=name, available_rooms=capacity)
+            ids.append(room.id)
+        rooms = Room.objects.none() if len(ids) == 0 else Room.objects.filter(id__in=ids)
+        return rooms
+
 
 class HotelCheckInForm(ModelForm):
-	class Meta:
-		model = HotelCheckIn
-		fields = "__all__" 
+    class Meta:
+        model = HotelCheckIn
+        fields = "__all__"
 
 
 class BusCheckInForm(ModelForm):
-	class Meta:
-		model = BusCheckIn
-		fields = "__all__" 
+    class Meta:
+        model = BusCheckIn
+        fields = "__all__"
 
 
 class PayTripForm(ModelForm):
-	class Meta:
-		model = PayTrip
-		exclude = ('trip', 'is_paid','is_delivered','staff')
+    class Meta:
+        model = PayTrip
+        exclude = ('trip', 'is_paid', 'is_delivered', 'staff')
 
 
 class ImageTripForm(ModelForm):
-	class Meta:
-		model = ImageTrip
-		fields = "__all__" 
-
-
-
-
-
-
-
-
+    class Meta:
+        model = ImageTrip
+        fields = "__all__"

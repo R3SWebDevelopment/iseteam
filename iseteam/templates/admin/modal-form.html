@@ -1,0 +1,7 @@
+<div id="{{ id|default:'modal-form' }}" class="modal-form-view modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            {% include 'admin/modal-inner-form.html' with action_url=action_url form=form create_label=create_label update_label=update_label mode=mode title=title %}
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

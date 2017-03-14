@@ -7,6 +7,34 @@ ROOM RECORDS | ISE | WE CARE
 {% block css %}
 {% endblock %}
 {% block scripts %}
+<script>
+    $('body').ready(function(){
+        var add_one_room_trigger = $(this).find('#add_one_room_trigger');
+        var modal_one_room_view = $(this).find('#add_one_room');
+        $(add_one_room_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_one_room_view).modal()
+        });
+        var add_one_room_trigger = $(this).find('#add_multiple_room_trigger');
+        var modal_multiple_room_view = $(this).find('#add_multiple_room');
+        $(add_one_room_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_multiple_room_view).modal()
+        });
+        var edit_room_trigger = $(this).find('.edit_room_trigger');
+        var modal_edit_room_view = $(this).find('#edit_room');
+        $(edit_room_trigger).click(function(e){
+            e.preventDefault();
+            var url = $(this).data('url');
+            $(modal_edit_room_view).modal('hide');  // Hide in case it still been showing
+            $(modal_edit_room_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_edit_room_view).modal({
+                'remote': url
+            });
+            $(modal_edit_room_view).modal('show');
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -55,6 +83,29 @@ ROOM RECORDS | ISE | WE CARE
       </div>
     </div>
 
+    <div class="row">
+        <div class = "col-md-1 col-md-offset-10">
+        {% if trip.edit_is_allow %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add Room <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" id="add_one_room_trigger">
+                            One Room
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="add_multiple_room_trigger">
+                            Multiple Rooms
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+        </div>
+    </div>
 
     <div class="row">
 
@@ -63,16 +114,36 @@ ROOM RECORDS | ISE | WE CARE
 
         <div class="col-md-8 col-md-offset-2">
 
-
+        {% with trip.rooms_with_available_capacity as available_rooms %}
             {% for room in rooms %}
 
-            <h4>Room {{ room }}</h4>
+
+            <div class = "col-md-6">
+                <h4>Room {{ room }}</h4>
+            </div>
+            <div class = "col-md-6">
+            {% if room.edit_is_allow %}
+                <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
+                    <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                    Edit
+                </button>
+            {% endif %}
+            {% if room.can_remove %}
+                <a href="{% url 'admin_hotel_records_remove_room' tripID=trip.id roomID=room.id  %}">
+                    <button type="button" class="btn btn-danger btn-sm pull-right">
+                        <span class="glyphicon glyphicon glyphicon-trash"></span>
+                        Remove
+                    </button>
+                </a>
+            {% endif %}
+            </div>
             <table class="table table-hover text-left" style="margin-top:30px">
                 <thead>
                 <tr class="warning">
                     <th>#</th>
                     <th>Name</th>
                     <th>Last Name</th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -81,12 +152,33 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ forloop.counter}}</td>
                     <td>{{ roomate.payment.name }}</td>
                     <td>{{ roomate.payment.last_name }}</td>
+                    <td>
+                    {% if room.can_change_roomate and available_rooms|length > 0 %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Move to Other Room ... <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                        {% for available_room in available_rooms %}
+                            {% if available_room.id  != room.id %}
+                                <li>
+                                    <a href="{% url 'admin_hotel_records_move_to' tripID=trip.id confirmation=roomate.id roomID=available_room.id %}">
+                                        {{ available_room }} ({{ available_room.available_rooms }} of {{ available_room.capacity }} left)
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </td>
                   </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
             {% endfor %}
+        {% endwith %}
         </div>
 
 
@@ -102,7 +194,11 @@ ROOM RECORDS | ISE | WE CARE
   <!-- START COPYRIGHT -->
   {% include "admin/footer.html"%}
 </div>
-
+{% url 'admin_hotel_records_add_one_room' tripID=trip.id as add_one_room_action %}
+{% include 'admin/modal-form.html' with id='add_one_room' title='Add One Room' form=add_room_form mode='create' action_url=add_one_room_action create_label='Add Room' reload_when_submit_success=True %}
+{% url 'admin_hotel_records_add_multiple_room' tripID=trip.id as add_multiple_room_action %}
+{% include 'admin/modal-form.html' with id='add_multiple_room' title='Add Multiple Room' form=add_multiple_room_form mode='create' action_url=add_multiple_room_action create_label='Add Rooms' reload_when_submit_success=True %}
+{% include 'admin/modal-form.html' with id='edit_room' title='Edit Room' mode='update' update_label='Edit Room' reload_when_submit_success=True %}
 
 {% endblock %}
 

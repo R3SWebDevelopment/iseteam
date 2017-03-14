@@ -1,22 +1,22 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.urlresolvers import reverse
+from django.shortcuts import redirect
 
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, loader, Context
-import json
+
 from django.db.models import Count
 from django.contrib.auth.models import User
 from django.conf import settings
-from django.views.generic import CreateView, DeleteView, ListView
-from django.utils import formats
-from django.core.urlresolvers import reverse
+from django.views.generic import DeleteView, ListView
 
 from django.contrib.auth import authenticate, login
 
-from iseteam.trips.forms import TripForm, HotelCheckInForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm
-from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip, \
+from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
+from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm
+from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
 from iseteam.email import Email
@@ -42,7 +42,7 @@ def login_trip(request, tripID):
             user = authenticate(username=username, password=password)
             if user is not None:
                 if user.is_active:
-                    login(request,user)
+                    login(request, user)
                     return HttpResponseRedirect('/trips/pay/%s/' % trip.pk)
             else:
                 return HttpResponse('Invalid username or password, please try again.')
@@ -56,11 +56,11 @@ def signup(request, tripID):
             # Create User
             now = datetime.datetime.now()
             new_user = User.objects.create_user(
-                username = form.cleaned_data['username'],
-                email = form.cleaned_data['email'],
-                first_name = form.cleaned_data['first_name'],
-                last_name = form.cleaned_data['last_name'],
-                last_login = now,
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                first_name=form.cleaned_data['first_name'],
+                last_name=form.cleaned_data['last_name'],
+                last_login=now,  # Why is this happening
             )
             password = form.cleaned_data['password1']
             new_user.set_password(password)
@@ -75,14 +75,14 @@ def signup(request, tripID):
             user = authenticate(username=new_user.username, password=password)
             if user is not None:
                 if user.is_active:
-                    login(request,user)
+                    login(request, user)
             else:
                 return HttpResponse('Something went wrong, please try again')
             return HttpResponseRedirect('/trips/pay/%s/' % trip.pk)
     else:
         form = SignUpForm()
     return render_to_response('trips/signup.html',
-        {'form': form}, context_instance=RequestContext(request))
+                              {'form': form}, context_instance=RequestContext(request))
 
 
 def card_payment(request, paytripID):
@@ -99,19 +99,20 @@ def card_payment(request, paytripID):
                 description="Viaje %s" % paytrip.trip.name,
             )
         except stripe.error.CardError as e:
-            new_card_payment = CardPayment.objects.create(
+            new_card_payment = CardPayment.objects.create(  # If not used it, created but not assigned
                 paytrip=paytrip,
                 amount=amount,
                 token=token,
                 status=str(e),
             )
             # Return Error Message
-            error_message =  e
+            error_message = e
             return render_to_response('trips/cardpayment.html',
-                {'error_message':e,'trip':paytrip.trip},context_instance=RequestContext(request))
+                                      {'error_message': e, 'trip': paytrip.trip},
+                                      context_instance=RequestContext(request))
 
         # Save CardPayment Reference
-        new_card_payment = CardPayment.objects.create(
+        new_card_payment = CardPayment.objects.create(  # If not used it, created but not assigned
             paytrip=paytrip,
             amount=amount,
             token=token,
@@ -121,13 +122,15 @@ def card_payment(request, paytripID):
         paytrip.is_paid = True
         paytrip.is_delivered = True
         paytrip.save()
-        confirmation = generate_confirmation(paytrip)
+        confirmation = generate_confirmation(paytrip)  #  Look into it
         # Return Successfully payment page with your confirmation number
         return render_to_response('trips/cardsuccessful.html',
-            {'confirmation':paytrip.confirmation},context_instance=RequestContext(request))
+                                  {'confirmation': paytrip.confirmation},
+                                  context_instance=RequestContext(request))
     else:
         return render_to_response('trips/cardpayment.html',
-            {'trip':paytrip.trip},context_instance=RequestContext(request))
+                                  {'trip': paytrip.trip},
+                                  context_instance=RequestContext(request))
     return HttpResponse(charge.status)
 
 
@@ -136,8 +139,8 @@ def card_payment(request, paytripID):
 def admin_all_trips(request):
     trips = Trip.objects.all().order_by('-date')
     return render_to_response('admin/trips/all_trips.html',
-        {'trips':trips}, context_instance=RequestContext(request))
-
+                              {'trips': trips},
+                              context_instance=RequestContext(request))
 
 
 @login_required_staff(login_url='/login/')
@@ -155,7 +158,8 @@ def post(request):
     else:
         form = TripForm()
     return render_to_response('admin/trips/new_trip.html',
-        {'form':form}, context_instance=RequestContext(request))
+                              {'form': form},
+                              context_instance=RequestContext(request))
 
 
 @login_required_staff(login_url='/login/')
@@ -170,12 +174,13 @@ def edit_trip(request, tripID):
     else:
         form = TripForm(instance=trip)
     return render_to_response('admin/trips/edit-trip.html',
-        {'form': form, 'trip': trip}, context_instance=RequestContext(request))
+                              {'form': form, 'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 @login_required_staff(login_url='/login/')
 @login_required(login_url='/login/')
-def delete_trip(request,tripID):
+def delete_trip(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     trip.delete()
     return HttpResponseRedirect('/admin/trips/all-trips/')
@@ -202,26 +207,28 @@ def pay(request, trip):
                     user.userextension.save()
             # Send Mail to staff
             to = settings.STAFF_EMAIL
-            context_render = {'pay':payment}
-            subject ='ISE | Someone has purchased a trip.'
+            context_render = {'pay': payment}
+            subject = 'ISE | Someone has purchased a trip.'
+
             template = 'emails/paytrip_staff.html'
             Email(to,subject,context_render,template).send()
 
             # Redirect to view where they can pay
             if payment.method == 'card':
-                return HttpResponseRedirect('%s/trips/cardpayment/%s/' % (settings.SITE_URL,payment.pk) )
+                return HttpResponseRedirect('%s/trips/cardpayment/%s/' % (settings.SITE_URL, payment.pk))
 
             # Send mail to buyer or called first mail
             first_mail(payment)
 
             return render_to_response('trips/pay.html',
-                {'form': form, 'trip': trip, 'successfully': True}, context_instance=RequestContext(request))
-
+                                      {'form': form, 'trip': trip, 'successfully': True},
+                                      context_instance=RequestContext(request))
 
     else:
         form = PayTripForm()
     return render_to_response('trips/pay.html',
-        {'form': form, 'trip': trip}, context_instance=RequestContext(request))
+                              {'form': form, 'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -238,7 +245,8 @@ def edit_payment(request, paymentID):
     else:
         form = PayTripForm(instance=payment)
     return render_to_response('trips/edit_payment.html',
-        {'form': form, 'payment': payment}, context_instance=RequestContext(request))
+                              {'form': form, 'payment': payment},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -288,39 +296,45 @@ def delete_payment(request, paymentID):
 def view(request, slug):
     trip = get_object_or_404(Trip, slug=slug)
     return render_to_response('trips/view.html',
-                              {'trip': trip}, context_instance=RequestContext(request))
+                              {'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 def view_queretaro(request, slug):
     trip = get_object_or_404(Trip, slug=slug)
     return render_to_response('trips/view_queretaro.html',
-                              {'trip': trip}, context_instance=RequestContext(request))
+                              {'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 def view_toluca(request, slug):
     trip = get_object_or_404(Trip, slug=slug)
     return render_to_response('trips/view_toluca.html',
-                              {'trip': trip}, context_instance=RequestContext(request))
+                              {'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 # View all trips mty
 def trips(request):
     trips = Trip.objects.filter(city="Mty").order_by('-date')[:5]
     return render_to_response('trips/trips.html',
-                              {'trips': trips}, context_instance=RequestContext(request))
+                              {'trips': trips},
+                              context_instance=RequestContext(request))
 
 
 # View all events
 def trips_queretaro(request):
     trips = Trip.objects.filter(city="Qro").order_by('-date')[:5]
     return render_to_response('trips/trips_queretaro.html',
-                              {'trips': trips}, context_instance=RequestContext(request))
+                              {'trips': trips},
+                              context_instance=RequestContext(request))
 
 
 def trips_toluca(request):
     trips = Trip.objects.filter(city="Toluca").order_by('-date')[:5]
     return render_to_response('trips/trips_toluca.html',
-                              {'trips': trips}, context_instance=RequestContext(request))
+                              {'trips': trips},
+                              context_instance=RequestContext(request))
 
 
 # View of hotel checkin
@@ -330,7 +344,7 @@ def hotel(request, tripID, confirmation, roomID):
     try:
         confirmation = Confirmation.objects.get(code=confirmation)
         room = Room.objects.get(pk=roomID)
-    except:
+    except:  # Why naked exceptions
         return HttpResponse(json.dumps({'done': 'no'}), content_type='application/json')
 
     if not confirmation.has_room and confirmation.payment.is_paid:
@@ -339,8 +353,8 @@ def hotel(request, tripID, confirmation, roomID):
         confirmation.has_room = True
         room.save()
         confirmation.save()
-        if room.available_rooms <=0:
-            room.is_full=True
+        if room.available_rooms <= 0:
+            room.is_full = True
             room.save()
             hotel_mail(roomID)
         return HttpResponse(json.dumps({'done': 'yes', 'room': room.name,
@@ -367,11 +381,11 @@ def bus(request):
                 # Send mail to client
                 bus = buscheckin.bus.name
                 confirmation = Confirmation.objects.get(code=buscheckin.confirmation)
-                bus_mail(confirmation,bus)
+                bus_mail(confirmation, bus)
                 return HttpResponse(json.dumps({'done': 'yes'}), content_type='application/json')
 
             else:
-                return HttpResponse(json.dumps({'done':'no'}), content_type='application/json')
+                return HttpResponse(json.dumps({'done': 'no'}), content_type='application/json')
 
 
 @staff_member_required
@@ -379,17 +393,225 @@ def bus(request):
 def hotel_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     rooms = Room.objects.filter(trip=trip)
+    add_room_form = RoomForm(initial={'trip': trip})
+    add_multiple_room_form = MultipleRoomForm(initial={'trip': trip})
     return render_to_response('admin/trips/rooms.html',
-                              {'rooms': rooms, 'trip': trip}, context_instance=RequestContext(request))
+                              {'rooms': rooms, 'trip': trip, 'add_room_form': add_room_form,
+                               'add_multiple_room_form': add_multiple_room_form},
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_one_room(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = RoomForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        room = form.save(commit=False)
+        room.save()
+        action_url = reverse('admin_hotel_records_add_one_room', kwargs={'tripID': tripID})
+        create_label = 'Add Room'
+        title = 'Add One Room'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_multiple_room(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = MultipleRoomForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        rooms = form.save()
+        action_url = reverse('admin_hotel_records_add_multiple_room', kwargs={'tripID': tripID})
+        create_label = 'Add Rooms'
+        title = 'Add Multiple Room'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_edit_room(request, tripID, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    rooms = trip.rooms
+    room = rooms.filter(pk=roomID).first() if rooms.exists() else None
+
+    if room is None:
+        raise Http404("Room does not exists")
+
+    form = RoomForm(request.POST, instance=room) if request.method == 'POST' else RoomForm(instance=room)
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+    update_label = 'Save Changes'
+    title = 'Edit Room'
+    action_url = reverse('admin_hotel_records_edit_room', kwargs={'tripID': tripID, 'roomID': roomID})
+    return render_to_response('admin/modal-inner-form.html',
+                              {'form': form, 'action_url': action_url, 'update_label': update_label,
+                               'mode': 'update', 'title': title, 'reload_when_submit_success': True},
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_remove_room(request, tripID, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    rooms = trip.rooms
+    room = rooms.filter(pk=roomID).first() if rooms.exists() else None
+
+    if room is None:
+        raise Http404("Room does not exists")
+
+    if not room.can_remove:
+        raise Http404("Room can not be removed")
+
+    room.delete()
+    url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_move_to(self, tripID, confirmation, roomID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    rooms = trip.rooms
+    room = rooms.filter(pk=roomID).first() if rooms.exists() else None
+
+    if room is None:
+        raise Http404("Room does not exists")
+
+    confirmations = trip.confirmations
+
+    confirmation = confirmations.filter(id=confirmation).first() if confirmations.exists() else None
+
+    if confirmation is None:
+        raise Http404("Confirmation does not exists")
+
+    original_room = confirmation.room_set.first()
+    if original_room is None:
+        raise Http404("Original Room does not exists")
+    original_room.move_to(confirmation, room)
+    url = reverse('admin_hotel_records', kwargs={'tripID': tripID})
+    return redirect(url)
 
 
 @staff_member_required
 @login_required(login_url='/login/')
 def bus_records(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
-    buses = trip.get_buses_grouped()
+    buses = trip.get_buses
+    add_bus_form = BusForm(initial={'trip': trip})
+    add_multiple_bus_form = MultipleBusForm(initial={'trip': trip})
     return render_to_response('admin/trips/buses.html',
-                              {'buses': buses, 'trip': trip}, context_instance=RequestContext(request))
+                              {'buses': buses, 'trip': trip, 'add_bus_form': add_bus_form,
+                               'add_multiple_bus_form': add_multiple_bus_form},
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_add_one_bus(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = BusForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        room = form.save()
+        action_url = reverse('admin_bus_records_add_one_bus', kwargs={'tripID': tripID})
+        create_label = 'Add Bus'
+        title = 'Add One Bus'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_multiple_bus(request, tripID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    form = MultipleBusForm(request.POST, initial={'trip': trip})
+    if form.is_valid():
+        buses = form.save()
+        action_url = reverse('admin_hotel_records_add_multiple_bus', kwargs={'tripID': tripID})
+        create_label = 'Add Buses'
+        title = 'Add Multiple Buses'
+        return render_to_response('admin/modal-inner-form.html',
+                                  {'form': form, 'action_url': action_url, 'create_label': create_label,
+                                   'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                                  context_instance=RequestContext(request))
+    raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_remove_bus(request, tripID, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    if not bus.can_remove:
+        raise Http404("Bus can not be removed")
+
+    trip.remove_bus(bus)
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_edit_bus(request, tripID, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    form = BusForm(request.POST, instance=bus,  initial={'trip': trip}) \
+        if request.method == 'POST' else BusForm(instance=bus,  initial={'trip': trip})
+    if request.method == 'POST' and form.is_valid():
+        print "SAVE"
+        form.save()
+    update_label = 'Save Changes'
+    title = 'Edit Bus'
+    action_url = reverse('admin_hotel_records_edit_bus', kwargs={'tripID': tripID, 'busID': busID})
+    return render_to_response('admin/modal-inner-form.html',
+                              {'form': form, 'action_url': action_url, 'update_label': update_label,
+                               'mode': 'update', 'title': title, 'reload_when_submit_success': True},
+                              context_instance=RequestContext(request))
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_move_to(self, tripID, seat, busID):
+    trip = get_object_or_404(Trip, pk=tripID)
+    buses = trip.get_buses
+    bus = buses.filter(pk=busID).first() if buses.exists() else None
+
+    if bus is None:
+        raise Http404("Bus does not exists")
+
+    seats_confirmed = trip.seats_confirmed
+
+    seat_confirmed = seats_confirmed.filter(id=seat).first() if seats_confirmed.exists() else None
+
+    if seat_confirmed is None:
+        raise Http404("Seat Confirmation does not exists")
+
+    original_bus = seat_confirmed.bus
+    if original_bus is None:
+        raise Http404("Original Bus does not exists")
+    seat_confirmed.move_to(bus)
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
 
 
 @staff_member_required
@@ -398,7 +620,8 @@ def manage_buses(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     buses = trip.buses.all()
     return render_to_response('admin/trips/manage_buses.html',
-                              {'buses': buses, 'trip': trip}, context_instance=RequestContext(request))
+                              {'buses': buses, 'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -406,14 +629,15 @@ def manage_buses(request, tripID):
 def add_bus(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
     if request.method == 'POST':
-        form = BusForm(request.POST)
+        form = BusForm(request.POST)  # Where is the BusForm
         if form.is_valid():
             new_bus = form.save()
             trips.buses.add(new_bus)
     else:
-        form = BusForm()
+        form = BusForm()  # Where is the BusForm
     return render_to_response('admin/trips/add_bus.html',
-                              {'form': form}, context_instance=RequestContext(request))
+                              {'form': form},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required
@@ -422,7 +646,8 @@ def bus_records2(request):
     trip = get_object_or_404(Trip, pk=7)
     buses = trip.get_buses_grouped()
     return render_to_response('trips/bus_records.html',
-                              {'buses': buses, 'trip': trip}, context_instance=RequestContext(request))
+                              {'buses': buses, 'trip': trip},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required	
@@ -436,16 +661,16 @@ def payment_records(request, tripID):
         if request.GET['order_by'] == 'date':
             records = PayTrip.objects.filter(trip=trip).order_by('-timestamp')
         if request.GET['order_by'] == 'status':
-            records = PayTrip.objects.filter(trip=trip).order_by('-is_paid','-is_delivered')
+            records = PayTrip.objects.filter(trip=trip).order_by('-is_paid', '-is_delivered')
     else:
         records = PayTrip.objects.filter(trip=trip)
 
-    staff_list = PayTrip.objects.filter(trip=trip, is_paid=True).values('staff').annotate(Count('staff')).\
-        order_by('staff')
+    staff_list = PayTrip.objects.filter(trip=trip, is_paid=True).values('staff').\
+        annotate(Count('staff')).order_by('staff')
     sales = []
     for v in staff_list:
-        if not v['staff'] is None:
-            sales.append({'staff':User.objects.get(pk=v['staff']).get_full_name(), 'quantity': v['staff__count']})
+        if not v['staff'] == None:  # Wrong comparison
+            sales.append({'staff': User.objects.get(pk=v['staff']).get_full_name(), 'quantity': v['staff__count']})
 
     genders = PayTrip.objects.filter(trip=trip, is_paid=True).values('gender').annotate(Count('gender'))
 
@@ -468,19 +693,14 @@ def payment_records(request, tripID):
     staff = User.objects.filter(is_staff=True, is_active=True).order_by('-first_name')
 
     return render_to_response('admin/trips/payments.html',
-                              {
-                                  'records': records, 'trip': trip,
-                                  'sales': sales, 'genders': genders,
-                                  'mexicans': mexicans, 'foreigners': foreigners,
-                                  'itesm': itesm, 'udem': udem, 'uanl': uanl, 'ur': ur, 'cedim': cedim,
-                                  'egade': egade, 'working': working, 'other': other,
-                                  'paid': paid, 'still': still, 'staff': staff,
-                                  'fullsize': True, 'delivered': delivered
-                              },
-                              context_instance=RequestContext(request))
+                              {'records': records, 'trip': trip, 'sales': sales, 'genders': genders,
+                               'mexicans': mexicans, 'foreigners': foreigners, 'itesm': itesm, 'udem': udem,
+                               'uanl': uanl, 'ur': ur, 'cedim': cedim, 'egade': egade, 'working': working,
+                               ' other': other, 'paid': paid, 'still': still, 'staff': staff, 'fullsize': True,
+                               'delivered': delivered}, context_instance=RequestContext(request))
 
 
-@staff_member_required	
+@staff_member_required
 @login_required(login_url='/login/')
 def payment_records_excel(request, tripID):
     trip = get_object_or_404(Trip, pk=tripID)
@@ -489,7 +709,7 @@ def payment_records_excel(request, tripID):
     response['Content-Disposition'] = 'attachment; filename="%s-payments.csv"' % trip.name
     csv_data = []
     count = 1
-    for record in records:
+    for record in records:  # Why don't create a method on the trip to do this and could be reused
         if record.is_paid:
             status = "Paid."
             confirmation = record.confirmation.code
@@ -534,7 +754,7 @@ def buses_records_excel(request, tripID):
     response['Content-Disposition'] = 'attachment; filename="%s-buses.csv"' % trip.name
     csv_data = []
     count = 1
-    for record in records:
+    for record in records:  # Why don't create a method on the trip to do this and could be reused
         csv_data.append((
             count,
             record.name,
@@ -544,7 +764,7 @@ def buses_records_excel(request, tripID):
             record.bus,
             ))
         count += 1
-    t = loader.get_template('buses_excel.txt')
+    t = loader.get_template('buses_excel.txt')  # Should be a parameter not hard coded
     c = Context({
         'data': csv_data,
                 })
@@ -560,8 +780,7 @@ def see_history(request, paytripID):
     tr_content = ""
     for record in records:
         tr_content += "<tr><td>%s</td><td>%s</td></tr>" % (record.staff.get_full_name(), record.timestamp)
-    html = "<table class='table'><thead><tr><th>Last change made by...</th><th>Date</th></tr></thead><tbody " \
-           "class='text-left'><tr>%s</tr></tbody></table>" % tr_content
+    html = "<table class='table'><thead><tr><th>Last change made by...</th><th>Date</th></tr></thead><tbody class='text-left'><tr>%s</tr></tbody></table>" % tr_content  # Why don't use a template
     return HttpResponse(html)
 
 
@@ -574,7 +793,7 @@ def hotel_records_excel(request, tripID):
     response['Content-Disposition'] = 'attachment; filename="%s-rooms.csv"' % trip.name
     csv_data = []
 
-    for room in rooms:
+    for room in rooms:  # Why don't create a method on the trip to do this and could be reused
         count = 1
         for roomate in room.roomates.all():
             csv_data.append((
@@ -601,7 +820,7 @@ def assign_staff(request, paymentID, staffID):
     payment.save()
     assignment = PaymentAssignment.objects.create(paytrip=payment, staff=staff)
 
-    response_json = json.dumps({'success': 'true', 'staff': '%s' % staff.get_full_name()})
+    response_json = json.dumps({'success': 'true', 'staff': '%s' % staff.get_full_name()})  # Why does it use old string formatting when it's a simple value asignment
     return HttpResponse(response_json)
 
 
@@ -613,7 +832,9 @@ def pay_trip(request, paymentID):
     payment.save()
     confirmation = generate_confirmation(payment)
 
-    response = {'success': 'true','confirmation': payment.confirmation.code, 'client': payment.get_full_name()}
+    response = {'success': 'true', 'confirmation': payment.confirmation.code, 'client': payment.get_full_name()}
+
+    return HttpResponse(json.dumps(response))
 
     return HttpResponse(json.dumps(response))
 
@@ -643,8 +864,7 @@ def buses_html(request, tripID):
     trip = Trip.objects.get(pk=tripID)
     html = "<option value='' selected='selected'>Select a Bus</option>"
     for bus in trip.buses.filter(is_full=False):
-        html += ("<option value=" + str(bus.pk) + ">" + bus.name + ":::::" + str(bus.available_seats) +
-                 " Left" + "</option>")
+        html += ("<option value=" + str(bus.pk) + ">" + bus.name + ":::::" + str(bus.available_seats) + " Left" + "</option>")  # What????????? Use string format
     return HttpResponse(html)
 
 
@@ -653,12 +873,15 @@ def rooms_html(request, tripID):
     rooms = Room.objects.filter(trip=trip, is_full=False)
     html = "<option value='' selected='selected'>Select a Room</option>"
     for room in rooms:
-        html += ("<option value=" + str(room.pk) + ">" + room.name + ":::::" + str(room.available_rooms) +
-                 " Left" + "</option>")
+        html += ("<option value=" + str(room.pk) + ">" + room.name + ":::::" + str(room.available_rooms) + " Left" + "</option>")  # What????????? Use string format
     return HttpResponse(html)
 
+
+
+
+# Why don't you put this on separated file?
 '''
-Some functions used
+Some functions used   # Wrong use of comments
 '''
 import hashlib
 
@@ -667,7 +890,7 @@ def first_mail(payment):
     # Send mail to buyer
     to1 = payment.email
     subject1 = 'ISE | TRIP ORDER CONFIRMATION.'
-    context_render = {'pay':payment}
+    context_render = {'pay': payment}
     template1 = 'emails/paytrip.html'
     if payment.method == "bankdeposit":
         template1 = 'emails/paytripbank.html'
@@ -680,12 +903,12 @@ def first_mail(payment):
     Email([to1], subject1, context_render, template1).send()
 
 
-def confirmation_mail(payment,code):
+def confirmation_mail(payment, code):
     to1 = payment.email
     subject1 = 'ISE | CONFIRMATION NUMBER OF %s' % payment.trip.name.upper()
     context_render = {'confirmation': code}
     template1 = 'emails/payconfirmation.html'
-    Email([to1, 'kayethano@gmail.com', ], subject1, context_render, template1).send()
+    Email([to1, ], subject1, context_render, template1).send()
 
 
 def bus_mail(confirmation, bus):
@@ -710,7 +933,7 @@ def hotel_mail(roomID):
 def generate_confirmation(payment):
     import random
 
-    code = hashlib.sha224('%s%s%s' % (payment.pk, str(payment.age), str(random.random()))).hexdigest()[10:18]
+    code = hashlib.sha224('%s%s%s' % (payment.pk, str(payment.age), str(random.random()))).hexdigest()[10:18]  # Break into small code and user string format
     code = code.upper()
     try:
         Confirmation.objects.get(payment=payment)
@@ -752,14 +975,15 @@ def upload_gallery(request, tripID):
             data = {'files': files}
             response = JSONResponse(data, mimetype=response_mimetype(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
-            print response
+            print response  # Why a print here?
             return response
         else:
             print form.errors
     else:
         form = ImageTripForm()
     return render_to_response('trips/picture_form.html',
-                              {'form': form}, context_instance=RequestContext(request))
+                              {'form': form},
+                              context_instance=RequestContext(request))
 
 
 def picture_create2(request):
@@ -768,21 +992,22 @@ def picture_create2(request):
         if form.is_valid():
             picture = form.save()
             files = [serialize(picture)]
-            data = {'files':files}
+            data = {'files': files}
             response = JSONResponse(data, mimetype=response_mimetype(request))
             response['Content-Disposition'] = 'inline; filename=files.json'
             return response
     else:
         form = ImageTripForm()
     return render_to_response('trips/picture_basicplus_form.html',
-                              {'form': form}, context_instance=RequestContext(request))
+                              {'form': form},
+                              context_instance=RequestContext(request))
 
 
 class PictureDeleteView(DeleteView):
     model = ImageTrip
 
     def delete(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        self.object = self.get_object()  # Look into this
         self.object.delete()
         response = JSONResponse(True, mimetype=response_mimetype(request))
         response['Content-Disposition'] = 'inline; filename=files.json'
@@ -793,7 +1018,7 @@ class PictureListView(ListView):
     model = ImageTrip
     template_name_suffix = '_jquery_form'
 
-    def render_to_response(self ,context, **response_kwargs):
+    def render_to_response(self, context, **response_kwargs):
         files = [serialize(p) for p in self.get_queryset()]
         data = {'files': files}
         response = JSONResponse(data, mimetype=response_mimetype(self.request))

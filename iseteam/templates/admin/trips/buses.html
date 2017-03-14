@@ -7,6 +7,37 @@ ROOM RECORDS | ISE | WE CARE
 {% block css %}
 {% endblock %}
 {% block scripts %}
+<script>
+    $('body').ready(function(){
+        var add_one_bus_trigger = $(this).find('#add_one_bus_trigger');
+        var modal_one_bus_view = $(this).find('#add_one_bus');
+        $(add_one_bus_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_one_bus_view).modal()
+        });
+
+
+        var add_multiple_bus_trigger = $(this).find('#add_multiple_bus_trigger');
+        var modal_multiple_bus_view = $(this).find('#add_multiple_bus');
+        $(add_multiple_bus_trigger).click(function(e){
+            e.preventDefault();
+            $(modal_multiple_bus_view).modal()
+        });
+
+        var edit_bus_trigger = $(this).find('.edit_bus_trigger');
+        var modal_edit_bus_view = $(this).find('#edit_bus');
+        $(edit_bus_trigger).click(function(e){
+            e.preventDefault();
+            var url = $(this).data('url');
+            $(modal_edit_bus_view).modal('hide');  // Hide in case it still been showing
+            $(modal_edit_bus_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_edit_bus_view).modal({
+                'remote': url
+            });
+            $(modal_edit_bus_view).modal('show');
+        });
+    });
+</script>
 {% endblock %}
 
 {% block content %}
@@ -55,14 +86,55 @@ ROOM RECORDS | ISE | WE CARE
       </div>
     </div>
 
+    <div class="row">
+        <div class = "col-md-1 col-md-offset-10">
+        {% if trip.edit_is_allow %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Add Bus <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="#" id="add_one_bus_trigger">
+                            One Bus
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="add_multiple_bus_trigger">
+                            Multiple Buses
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% endif %}
+        </div>
+    </div>
 
     <div class="row">
 
         <div class="col-md-8 col-md-offset-2">
-
+        {% with trip.buses_with_available_seat as available_buses %}
             {% for bus in buses %}
 
-            <h1>{{ bus.bus }}</h1>
+            <div class = "col-md-6">
+                <h1>{{ bus }}</h1>
+            </div>
+            <div class = "col-md-6">
+            {% if bus.edit_is_allow %}
+                <button type="button" class="edit_bus_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_bus' tripID=trip.id busID=bus.id %}">
+                    <span class="glyphicon glyphicon glyphicon-pencil"></span>
+                    Edit
+                </button>
+            {% endif %}
+            {% if bus.can_remove %}
+                <a href="{% url 'admin_hotel_records_remove_bus' tripID=trip.id busID=bus.id  %}">
+                    <button type="button" class="btn btn-danger btn-sm pull-right">
+                        <span class="glyphicon glyphicon glyphicon-trash"></span>
+                        Remove
+                    </button>
+                </a>
+            {% endif %}
+            </div>
             <table class="table table-hover text-left" style="margin-top:30px">
                 <thead>
                 <tr class="warning">
@@ -70,6 +142,7 @@ ROOM RECORDS | ISE | WE CARE
                     <th>Full Name</th>
                     <th>Confirmation Code</th>
                     <th>Record Date</th>
+                    <th></th>
                 </thead>
                 <tbody>
                 {% for seat in bus.seats %}
@@ -78,12 +151,33 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ seat.name|title }} {{ seat.last_name|title }}</td>
                     <td>{{ seat.confirmation }}</td>
                     <td>{{ seat.timestamp}}</td>
+                    <td>
+                    {% if bus.can_change_roomate and available_buses|length > 0 %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Move to Other Bus ... <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                        {% for available_bus in available_buses %}
+                            {% if available_bus.id  != bus.id %}
+                                <li>
+                                    <a href="{% url 'admin_bus_records_move_to' tripID=trip.id seat=seat.id busID=available_bus.id %}">
+                                        {{ available_bus }} ({{ available_bus.available_seats }} of {{ available_bus.total_seats }} left)
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
                 </tbody>
             </table>
 
             {% endfor %}
+        {% endwith %}
 
         </div>
 
@@ -94,7 +188,11 @@ ROOM RECORDS | ISE | WE CARE
   <!-- START COPYRIGHT -->
   {% include "admin/footer.html"%}
 </div>
-
+{% url 'admin_bus_records_add_one_bus' tripID=trip.id as add_one_bus_action %}
+{% include 'admin/modal-form.html' with id='add_one_bus' title='Add One Bus' form=add_bus_form mode='create' action_url=add_one_bus_action create_label='Add Bus' reload_when_submit_success=True %}
+{% url 'admin_hotel_records_add_multiple_bus' tripID=trip.id as add_multiple_bus_action %}
+{% include 'admin/modal-form.html' with id='add_multiple_bus' title='Add Multiple Buses' form=add_multiple_bus_form mode='create' action_url=add_multiple_bus_action create_label='Add Buses' reload_when_submit_success=True %}
+{% include 'admin/modal-form.html' with id='edit_bus' title='Edit Bus' mode='update' update_label='Edit Bus' reload_when_submit_success=True %}
 
 {% endblock %}
 
