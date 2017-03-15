@@ -288,6 +288,7 @@ class BusCheckIn(models.Model):
     last_name = models.CharField(max_length=255)
     confirmation = models.CharField(max_length=255)
     bus = models.ForeignKey(Bus)
+    seat_number = models.IntegerField(null=True)
 
     def __unicode__(self):
         return u'%s' % self.name
