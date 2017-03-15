@@ -316,6 +316,11 @@ class BusCheckIn(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
+    def save(self, *args, **kwargs):
+        if self.seat_number is None and self.bus is not None:
+            self.seat_number = self.bus.first_available_seat_number
+        super(BusCheckIn, self).save(*args, **kwargs)
+
     def move_to(self, bus):
         if bus.edit_is_allow:
             if bus.available_seats >= 1:
