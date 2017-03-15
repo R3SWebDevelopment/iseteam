@@ -142,6 +142,7 @@ ROOM RECORDS | ISE | WE CARE
                     <th>Full Name</th>
                     <th>Confirmation Code</th>
                     <th>Record Date</th>
+                    <th>Seat Number</th>
                     <th></th>
                 </thead>
                 <tbody>
@@ -151,6 +152,7 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ seat.name|title }} {{ seat.last_name|title }}</td>
                     <td>{{ seat.confirmation }}</td>
                     <td>{{ seat.timestamp}}</td>
+                      <td>{{ seat.seat_number|default:'No Seat Assigned'}}</td>
                     <td>
                     {% if bus.can_change_roomate and available_buses|length > 0 %}
                         <div class="btn-group">
