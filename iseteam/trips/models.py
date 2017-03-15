@@ -329,6 +329,9 @@ class BusCheckIn(models.Model):
     bus = models.ForeignKey(Bus)
     seat_number = models.IntegerField(null=True)
 
+    class Meta:
+        ordering = ['seat_number']
+
     def __unicode__(self):
         return u'%s' % self.name
 
