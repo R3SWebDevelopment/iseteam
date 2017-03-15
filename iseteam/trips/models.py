@@ -48,6 +48,22 @@ class Bus(models.Model):
     available_seats = models.IntegerField(default=42)
     is_full = models.BooleanField(default=False)
 
+    def is_seat_number_available(self, seat_number):
+        if seat_number <= self.total_seats and not self.is_full:
+            for seat in self.seat_list:
+                if seat.number == seat_number:
+                    return seat.occupied
+        return False
+
+    @property
+    def available_seat_list(self):
+        seats = self.seat_list
+        available_seats = []
+        for seat in seats:
+            if not seat.occupied:
+                available_seats.append(seat)
+        return available_seats
+
     @property
     def seat_list(self):
         seat_list = []
@@ -339,6 +355,14 @@ class BusCheckIn(models.Model):
         if self.name is not None and self.last_name is not None:
             return '{}, {}'.format(self.last_name, self.name)
         return self.name if self.name else self.last_name
+
+    def assign_number(self, seat_number):
+        if self.bus is None:
+            raise ValidationError('This Check-In does not have bus')
+        if not self.bus.is_seat_number_available(seat_number):
+            raise ValidationError('This seat number is not available')
+        self.seat_number = seat_number
+        self.save()
 
 
 class PayTrip(models.Model):
