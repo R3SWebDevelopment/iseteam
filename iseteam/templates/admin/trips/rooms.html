@@ -134,11 +134,13 @@ ROOM RECORDS | ISE | WE CARE
                 <h4>Room {{ room }}</h4>
             </div>
             <div class = "col-md-6">
-            {% if room.edit_is_allow and room.is_full == False%}
+            {% if room.edit_is_allow and room.is_full == False %}
                 <button type="button" class="add_person_to_room_trigger btn btn-info btn-sm pull-right" data-url="{% url 'admin_hotel_records_add_person_to_room' tripID=trip.id targetID=room.id %}">
                     <span class="glyphicon glyphicon glyphicon-user"></span>
                     Add Person
                 </button>
+            {% endif %}
+            {% if room.edit_is_allow%}
                 <button type="button" class="edit_room_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_room' tripID=trip.id roomID=room.id %}">
                     <span class="glyphicon glyphicon glyphicon-pencil"></span>
                     Edit

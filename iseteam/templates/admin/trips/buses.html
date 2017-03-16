@@ -36,6 +36,18 @@ ROOM RECORDS | ISE | WE CARE
             });
             $(modal_edit_bus_view).modal('show');
         });
+        var add_person_to_bus_trigger = $(this).find('.add_person_to_bus_trigger');
+        var modal_add_person_to_bus_view = $(this).find('#add_person_to_bus');
+        $(add_person_to_bus_trigger).click(function(e){
+            e.preventDefault();
+            var url = $(this).data('url');
+            $(modal_add_person_to_bus_view).modal('hide');  // Hide in case it still been showing
+            $(modal_add_person_to_bus_view).removeData('bs.modal');  // Remove any posible data remaing
+            $(modal_add_person_to_bus_view).modal({
+                'remote': url
+            });
+            $(modal_add_person_to_bus_view).modal('show');
+        });
     });
 </script>
 {% endblock %}
@@ -120,6 +132,12 @@ ROOM RECORDS | ISE | WE CARE
                 <h1>{{ bus }}</h1>
             </div>
             <div class = "col-md-6">
+            {% if bus.edit_is_allow and bus.is_full == False %}
+                <button type="button" class="add_person_to_bus_trigger btn btn-info btn-sm pull-right" data-url="{% url 'admin_hotel_records_add_person_to_bus' tripID=trip.id targetID=bus.id %}">
+                    <span class="glyphicon glyphicon glyphicon-user"></span>
+                    Add Person
+                </button>
+            {% endif %}
             {% if bus.edit_is_allow %}
                 <button type="button" class="edit_bus_trigger btn btn-success btn-sm pull-right" data-url="{% url 'admin_hotel_records_edit_bus' tripID=trip.id busID=bus.id %}">
                     <span class="glyphicon glyphicon glyphicon-pencil"></span>
@@ -214,6 +232,7 @@ ROOM RECORDS | ISE | WE CARE
 {% url 'admin_hotel_records_add_multiple_bus' tripID=trip.id as add_multiple_bus_action %}
 {% include 'admin/modal-form.html' with id='add_multiple_bus' title='Add Multiple Buses' form=add_multiple_bus_form mode='create' action_url=add_multiple_bus_action create_label='Add Buses' reload_when_submit_success=True %}
 {% include 'admin/modal-form.html' with id='edit_bus' title='Edit Bus' mode='update' update_label='Edit Bus' reload_when_submit_success=True %}
+{% include 'admin/modal-form.html' with id='add_person_to_bus' reload_when_submit_success=True %}
 
 {% endblock %}
 

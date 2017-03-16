@@ -133,6 +133,24 @@ class Bus(models.Model):
             return True
         return False
 
+    def take_a_seat(self, confirmation, trip):
+        from views import bus_mail, code_is_valid
+        if code_is_valid(confirmation.code):
+            name = confirmation.first_name
+            last_name = confirmation.last_name
+            code = confirmation.code
+            seat_number = self.first_available_seat_number
+            buscheckin = BusCheckIn(trip=trip, name=name, last_name=last_name, confirmation=code, bus=self,
+                                    seat_number=seat_number)
+            buscheckin.save()
+            buscheckin.bus.available_seats -= 1
+            if buscheckin.bus.available_seats <= 0:
+                buscheckin.bus.is_full = True
+            buscheckin.bus.save()
+            # Send mail to client
+            bus_name = buscheckin.bus.name
+            bus_mail(confirmation, bus_name)
+
     def add_occupant(self):
         self.available_seats -= 1
         self.save()
@@ -418,6 +436,14 @@ class Confirmation(models.Model):
     @property
     def name(self):
         return self.payment.get_full_name() if self.payment is not None else self.__unicode__()
+
+    @property
+    def first_name(self):
+        return self.payment.name if self.payment is not None else ''
+
+    @property
+    def last_name(self):
+        return self.payment.last_name if self.payment is not None else ''
 
 
 class Room(models.Model):

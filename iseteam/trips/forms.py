@@ -197,10 +197,10 @@ class AddPersonForm(forms.Form):
     target = forms.ModelChoiceField(queryset=Confirmation.objects.none(), widget=HiddenInput())
 
     def __init__(self, *args, **kwargs):
-        trip = kwargs.pop('trip', None)
+        self.trip = kwargs.pop('trip', None)
         target = kwargs.pop('target', None)
         target_id = kwargs.pop('target_id', None)
-        if trip is None:
+        if self.trip is None:
             raise ValidationError('The trip is needed')
         if target is None:
             raise ValidationError('The target is needed')
@@ -209,18 +209,18 @@ class AddPersonForm(forms.Form):
 
         super(AddPersonForm, self).__init__(*args, **kwargs)
 
-        confirmations = Confirmation.objects.filter(payment__trip=trip)
+        confirmations = Confirmation.objects.filter(payment__trip=self.trip)
         if target.upper() == 'ROOM':
             confirmations = confirmations.exclude(id__in=[roomate.get('roomates__id') for roomate in
-                                                          trip.rooms.values('roomates__id')])
-            target_qs = trip.rooms
+                                                          self.trip.rooms.values('roomates__id')])
+            target_qs = self.trip.rooms
             target_obj = target_qs.get(id=target_id)
         elif target.upper() == 'BUS':
-            confirmations = confirmations.exclude(id__code=[bushcheckin.get('buscheckin__confirmation')
-                                                            for bushcheckin in trip.get_buses.
-                                                  exclude(buscheckin__confirmation__isnull=True).
-                                                  values('buscheckin__confirmation')])
-            target_qs = trip.get_buses
+            buses = self.trip.get_buses
+            values = buses.exclude(buscheckin__isnull=True).values('buscheckin__confirmation')
+            confirmations = confirmations.exclude(code__in=[buscheckin.get('buscheckin__confirmation')
+                                                            for buscheckin in values])
+            target_qs = self.trip.get_buses
             target_obj = target_qs.get(id=target_id)
         else:
             raise ValidationError('The wrong target')
@@ -234,9 +234,11 @@ class AddPersonForm(forms.Form):
         target = self.cleaned_data.get('target', None)
 
         if isinstance(target, Room):
+            from views import hotel_mail
             target.add_roomate(confirmation)
+            hotel_mail(target.id)
         elif isinstance(target, Bus):
-            pass
+            target.take_a_seat(confirmation, self.trip)
 
 
 class RoomForm(ModelForm):
