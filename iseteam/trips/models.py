@@ -51,8 +51,8 @@ class Bus(models.Model):
     def is_seat_number_available(self, seat_number):
         if seat_number <= self.total_seats and not self.is_full:
             for seat in self.seat_list:
-                if seat.number == seat_number:
-                    return seat.occupied
+                if seat['number'] == seat_number:
+                    return not seat['occupied']
         return False
 
     @property
@@ -60,7 +60,7 @@ class Bus(models.Model):
         seats = self.seat_list
         available_seats = []
         for seat in seats:
-            if not seat.occupied:
+            if not seat['occupied']:
                 available_seats.append(seat)
         return available_seats
 
@@ -84,8 +84,8 @@ class Bus(models.Model):
         if self.is_full:
             return None
         for seat_number in self.seat_list:
-            if not seat_number.occupied:
-                return seat_number.number
+            if not seat_number['occupied']:
+                return seat_number['number']
 
     def __unicode__(self):
         return u'%s' % self.name

@@ -113,9 +113,9 @@ ROOM RECORDS | ISE | WE CARE
     <div class="row">
 
         <div class="col-md-8 col-md-offset-2">
-        {% with trip.buses_with_available_seat as available_buses %}
-            {% for bus in buses %}
-
+    {% with trip.buses_with_available_seat as available_buses %}
+        {% for bus in buses %}
+            {% with bus.available_seat_list as available_seat_list %}
             <div class = "col-md-6">
                 <h1>{{ bus }}</h1>
             </div>
@@ -144,6 +144,7 @@ ROOM RECORDS | ISE | WE CARE
                     <th>Record Date</th>
                     <th>Seat Number</th>
                     <th></th>
+                    <th></th>
                 </thead>
                 <tbody>
                 {% for seat in bus.seats %}
@@ -152,7 +153,25 @@ ROOM RECORDS | ISE | WE CARE
                     <td>{{ seat.name|title }} {{ seat.last_name|title }}</td>
                     <td>{{ seat.confirmation }}</td>
                     <td>{{ seat.timestamp}}</td>
-                      <td>{{ seat.seat_number|default:'No Seat Assigned'}}</td>
+                    <td>{{ seat.seat_number|default:'No Seat Assigned'}}</td>
+                    <td>
+                    {% if bus.edit_is_allow and available_seat_list|length > 0 %}
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Move to Other Seat ... <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                        {% for available_seat in available_seat_list %}
+                                <li>
+                                    <a href="{% url 'admin_bus_records_change_seat' tripID=trip.id seat=seat.id seat_number=available_seat.number %}">
+                                        {{ available_seat.number }}
+                                    </a>
+                                </li>
+                        {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    </td>
                     <td>
                     {% if bus.can_change_roomate and available_buses|length > 0 %}
                         <div class="btn-group">
@@ -177,9 +196,9 @@ ROOM RECORDS | ISE | WE CARE
                 {% endfor %}
                 </tbody>
             </table>
-
-            {% endfor %}
-        {% endwith %}
+            {% endwith %}
+        {% endfor %}
+    {% endwith %}
 
         </div>
 

@@ -589,6 +589,27 @@ def admin_hotel_records_edit_bus(request, tripID, busID):
                                'mode': 'update', 'title': title, 'reload_when_submit_success': True},
                               context_instance=RequestContext(request))
 
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_change_seat(self, tripID, seat, seat_number):
+    trip = get_object_or_404(Trip, pk=tripID)
+
+    seats_confirmed = trip.seats_confirmed
+
+    seat_confirmed = seats_confirmed.filter(id=seat).first() if seats_confirmed.exists() else None
+
+    if seat_confirmed is None:
+        raise Http404("Seat Confirmation does not exists")
+
+    seat_number = int(seat_number)
+
+    seat_confirmed.assign_number(seat_number=seat_number)
+
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
+
 @staff_member_required
 @login_required(login_url='/login/')
 def admin_bus_records_move_to(self, tripID, seat, busID):
