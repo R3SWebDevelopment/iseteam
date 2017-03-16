@@ -783,6 +783,7 @@ def buses_records_excel(request, tripID):
             record.confirmation,
             record.timestamp,
             record.bus,
+            record.seat_number,
             ))
         count += 1
     t = loader.get_template('buses_excel.txt')  # Should be a parameter not hard coded
