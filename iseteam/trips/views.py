@@ -15,7 +15,7 @@ from django.views.generic import DeleteView, ListView
 from django.contrib.auth import authenticate, login
 
 from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm
+from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm, AddPersonForm
 from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
@@ -546,6 +546,31 @@ def admin_hotel_records_add_multiple_bus(request, tripID):
                                    'mode': 'create', 'title': title, 'reload_when_submit_success': True},
                                   context_instance=RequestContext(request))
     raise Http404("Invalid data provided")
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_hotel_records_add_person(request, tripID, target, targetID):
+    trip = get_object_or_404(Trip, pk=tripID)
+
+    form = AddPersonForm(request.POST, trip=trip, target=target, target_id=targetID) \
+        if request.method == 'POST' else AddPersonForm(trip=trip, target=target, target_id=targetID)
+    target_obj = form.fields['target'].initial
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+
+    if target.upper() == 'BUS':
+        title = 'Add Person to Bus {}'.format(target_obj)
+    else:
+        title = 'Add Person to Room {}'.format(target_obj)
+    create_label = 'Add Person'
+    action_url = request.path
+
+    return render_to_response('admin/modal-inner-form.html',
+                              {'form': form, 'action_url': action_url, 'create_label': create_label,
+                               'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                              context_instance=RequestContext(request))
 
 
 @staff_member_required

@@ -9,7 +9,7 @@ from iseteam.trips.views import bus_records, edit_trip, delete_trip, admin_hotel
         admin_hotel_records_add_multiple_room, admin_hotel_records_edit_room, admin_hotel_records_remove_room, \
         admin_hotel_records_move_to, admin_bus_records_add_one_bus, admin_hotel_records_add_multiple_bus,\
         admin_hotel_records_remove_bus, admin_hotel_records_edit_bus, admin_bus_records_move_to, \
-        admin_bus_records_change_seat
+        admin_bus_records_change_seat, admin_hotel_records_add_person
 from iseteam.events.views import admin_all_events, new_event, edit_event, delete_event
 from iseteam.housing.views import housing_records
 from iseteam.airport.views import pickup_records, pickup_records_mty, pickup_records_qro
@@ -40,6 +40,8 @@ urlpatterns = patterns('',
             name="admin_hotel_records_remove_room"),
         url(r'^trips/rooms/(?P<tripID>\d+)/move/(?P<confirmation>[a-zA-Z0-9]+)/to/(?P<roomID>\d+)/$',
             admin_hotel_records_move_to, name="admin_hotel_records_move_to"),
+        url(r'^trips/rooms/(?P<tripID>\d+)/add-person/(?P<targetID>\d+)/$', admin_hotel_records_add_person,
+            {'target': 'room'}, name="admin_hotel_records_add_person_to_room"),
 
         url(r'^trips/buses/(?P<tripID>\d+)/$', bus_records, name="admin_bus_records"),
         url(r'^trips/buses/(?P<tripID>\d+)/add-one/$', admin_bus_records_add_one_bus,
@@ -54,6 +56,8 @@ urlpatterns = patterns('',
             admin_bus_records_move_to, name="admin_bus_records_move_to"),
         url(r'^trips/buses/(?P<tripID>\d+)/change-seat/(?P<seat>[a-zA-Z0-9]+)/to/(?P<seat_number>\d+)/$',
             admin_bus_records_change_seat, name="admin_bus_records_change_seat"),
+        url(r'^trips/buses/(?P<tripID>\d+)/add-person/(?P<targetID>\d+)/$', admin_hotel_records_add_person,
+            {'target': 'bus'}, name="admin_hotel_records_add_person_to_bus"),
 
         url(r'^trips/edit-trip/(?P<tripID>\d+)/$', edit_trip, name="admin_edit_trip"),
         url(r'^events/edit-event/(?P<eventID>\d+)/$', edit_event, name="admin_edit_event"),

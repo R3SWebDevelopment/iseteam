@@ -415,6 +415,10 @@ class Confirmation(models.Model):
     def __unicode__(self):
         return u'%s' % self.code
 
+    @property
+    def name(self):
+        return self.payment.get_full_name() if self.payment is not None else self.__unicode__()
+
 
 class Room(models.Model):
     trip = models.ForeignKey(Trip)
