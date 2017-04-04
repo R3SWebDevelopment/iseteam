@@ -9,7 +9,7 @@
   <ul class="menu-items">
     <li class="m-t-30 open">
       <a href="javascript:;"><span class="title">Trips</span>
-      <span class=" arrow"></span></a>
+        <span class=" arrow"></span></a>
       <span class="icon-thumbnail">Tr</span>
       <ul class="sub-menu">
         <li class="">
@@ -26,7 +26,7 @@
     </li>
     <li class="">
       <a href="javascript:;"><span class="title">Events</span>
-      <span class=" arrow"></span></a>
+        <span class=" arrow"></span></a>
       <span class="icon-thumbnail">Ev</span>
       <ul class="sub-menu">
         <li class="">
@@ -43,7 +43,7 @@
     </li>
     <li class="">
       <a href="javascript:;"><span class="title">Staff</span>
-      <span class=" arrow"></span></a>
+        <span class=" arrow"></span></a>
       <span class="icon-thumbnail">St</span>
       <ul class="sub-menu">
         <li class="">
@@ -60,7 +60,7 @@
     </li>
     <li class="">
       <a href="javascript:;"><span class="title">Airport</span>
-      <span class=" arrow"></span></a>
+        <span class=" arrow"></span></a>
       <span class="icon-thumbnail">Air</span>
       <ul class="sub-menu">
         <li class="">
@@ -75,13 +75,15 @@
     </li>
     <li class="">
       <a href="javascript:;"><span class="title">Housing</span>
-      <span class=" arrow"></span></a>
+        <span class=" arrow"></span></a>
       <span class="icon-thumbnail">Hou</span>
       <ul class="sub-menu">
+      {% if perms.housing.view_housing %}
         <li class="">
           <a href="/admin/housing/records/">See Records</a>
           <span class="icon-thumbnail">Re</span>
         </li>
+      {% endif %}
       </ul>
     </li>
   </ul>

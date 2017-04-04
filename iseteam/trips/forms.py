@@ -1,10 +1,12 @@
 from django import forms
 from django.forms import ModelForm, Textarea, TextInput, SelectMultiple, FileInput, Select, HiddenInput
 
-from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room, Bus
+from iseteam.trips.models import Trip, HotelCheckIn, BusCheckIn, PayTrip, ImageTrip, Room, Bus, Confirmation
 
 from django.utils.translation import ugettext_lazy as _  # Are you using Translation on the entire project?
 from django.contrib.auth.models import User
+
+from django.core.exceptions import ValidationError
 
 attrs_dict = {'class': 'required form-control', }
 
@@ -181,6 +183,62 @@ class MultipleBusForm(ModelForm):
             ids.append(bus.id)
         buses = Bus.objects.none() if len(ids) == 0 else Bus.objects.filter(id__in=ids)
         return buses
+
+
+class ConfirmationChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        name = obj.name
+        return "{}".format(name.encode('ascii','ignore'))
+
+
+class AddPersonForm(forms.Form):
+    confirmation = ConfirmationChoiceField(queryset=Confirmation.objects.all(),
+                                          widget=Select(attrs={'class': 'form-control', 'required': True}))
+    target = forms.ModelChoiceField(queryset=Confirmation.objects.none(), widget=HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        self.trip = kwargs.pop('trip', None)
+        target = kwargs.pop('target', None)
+        target_id = kwargs.pop('target_id', None)
+        if self.trip is None:
+            raise ValidationError('The trip is needed')
+        if target is None:
+            raise ValidationError('The target is needed')
+        if target_id is None:
+            raise ValidationError('The target ID is needed')
+
+        super(AddPersonForm, self).__init__(*args, **kwargs)
+
+        confirmations = Confirmation.objects.filter(payment__trip=self.trip)
+        if target.upper() == 'ROOM':
+            confirmations = confirmations.exclude(id__in=[roomate.get('roomates__id') for roomate in
+                                                          self.trip.rooms.values('roomates__id')])
+            target_qs = self.trip.rooms
+            target_obj = target_qs.get(id=target_id)
+        elif target.upper() == 'BUS':
+            buses = self.trip.get_buses
+            values = buses.exclude(buscheckin__isnull=True).values('buscheckin__confirmation')
+            confirmations = confirmations.exclude(code__in=[buscheckin.get('buscheckin__confirmation')
+                                                            for buscheckin in values])
+            target_qs = self.trip.get_buses
+            target_obj = target_qs.get(id=target_id)
+        else:
+            raise ValidationError('The wrong target')
+
+        self.fields['confirmation'].queryset = confirmations
+        self.fields['target'].queryset = target_qs
+        self.fields['target'].initial = target_obj
+
+    def save(self):
+        confirmation = self.cleaned_data.get('confirmation', None)
+        target = self.cleaned_data.get('target', None)
+
+        if isinstance(target, Room):
+            from views import hotel_mail
+            target.add_roomate(confirmation)
+            hotel_mail(target.id)
+        elif isinstance(target, Bus):
+            target.take_a_seat(confirmation, self.trip)
 
 
 class RoomForm(ModelForm):

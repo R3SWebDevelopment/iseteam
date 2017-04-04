@@ -48,6 +48,45 @@ class Bus(models.Model):
     available_seats = models.IntegerField(default=42)
     is_full = models.BooleanField(default=False)
 
+    def is_seat_number_available(self, seat_number):
+        if seat_number <= self.total_seats and not self.is_full:
+            for seat in self.seat_list:
+                if seat['number'] == seat_number:
+                    return not seat['occupied']
+        return False
+
+    @property
+    def available_seat_list(self):
+        seats = self.seat_list
+        available_seats = []
+        for seat in seats:
+            if not seat['occupied']:
+                available_seats.append(seat)
+        return available_seats
+
+    @property
+    def seat_list(self):
+        seat_list = []
+        seats = self.seats
+        for seat_number in range(1, self.total_seats+1):
+            seat = seats.filter(seat_number=seat_number).first() if seats.exists() else None
+            occupied = True if seat is not None else False
+            occupant = seat.full_name if seat is not None else None
+            seat_list.append({
+                'number': seat_number,
+                'occupied': occupied,
+                'occupant': occupant,
+            })
+        return seat_list
+
+    @property
+    def first_available_seat_number(self):
+        if self.is_full:
+            return None
+        for seat_number in self.seat_list:
+            if not seat_number['occupied']:
+                return seat_number['number']
+
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -93,6 +132,24 @@ class Bus(models.Model):
         if self.edit_is_allow:
             return True
         return False
+
+    def take_a_seat(self, confirmation, trip):
+        from views import bus_mail, code_is_valid
+        if code_is_valid(confirmation.code):
+            name = confirmation.first_name
+            last_name = confirmation.last_name
+            code = confirmation.code
+            seat_number = self.first_available_seat_number
+            buscheckin = BusCheckIn(trip=trip, name=name, last_name=last_name, confirmation=code, bus=self,
+                                    seat_number=seat_number)
+            buscheckin.save()
+            buscheckin.bus.available_seats -= 1
+            if buscheckin.bus.available_seats <= 0:
+                buscheckin.bus.is_full = True
+            buscheckin.bus.save()
+            # Send mail to client
+            bus_name = buscheckin.bus.name
+            bus_mail(confirmation, bus_name)
 
     def add_occupant(self):
         self.available_seats -= 1
@@ -288,21 +345,45 @@ class BusCheckIn(models.Model):
     last_name = models.CharField(max_length=255)
     confirmation = models.CharField(max_length=255)
     bus = models.ForeignKey(Bus)
+    seat_number = models.IntegerField(null=True)
+
+    class Meta:
+        ordering = ['seat_number']
 
     def __unicode__(self):
         return u'%s' % self.name
+
+    def save(self, *args, **kwargs):
+        if self.seat_number is None and self.bus is not None:
+            self.seat_number = self.bus.first_available_seat_number
+        super(BusCheckIn, self).save(*args, **kwargs)
 
     def move_to(self, bus):
         if bus.edit_is_allow:
             if bus.available_seats >= 1:
                 self.bus.remove_occupant()
                 self.bus = bus
+                self.seat_number = bus.first_available_seat_number
                 self.save()
                 bus.add_occupant()
             else:
                 raise ValidationError('This Bus does not have available seats')
         else:
             raise ValidationError('This Bus can be Edit')
+
+    @property
+    def full_name(self):
+        if self.name is not None and self.last_name is not None:
+            return '{}, {}'.format(self.last_name, self.name)
+        return self.name if self.name else self.last_name
+
+    def assign_number(self, seat_number):
+        if self.bus is None:
+            raise ValidationError('This Check-In does not have bus')
+        if not self.bus.is_seat_number_available(seat_number):
+            raise ValidationError('This seat number is not available')
+        self.seat_number = seat_number
+        self.save()
 
 
 class PayTrip(models.Model):
@@ -351,6 +432,18 @@ class Confirmation(models.Model):
 
     def __unicode__(self):
         return u'%s' % self.code
+
+    @property
+    def name(self):
+        return self.payment.get_full_name() if self.payment is not None else self.__unicode__()
+
+    @property
+    def first_name(self):
+        return self.payment.name if self.payment is not None else ''
+
+    @property
+    def last_name(self):
+        return self.payment.last_name if self.payment is not None else ''
 
 
 class Room(models.Model):

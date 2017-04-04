@@ -1,7 +1,7 @@
-#, Name, Last name, Confirmation Code, Record Date, Bus
+#, Name, Last name, Confirmation Code, Record Date, Bus, Seat Number
 
 {% for row in data %}
-	{{ row.0 }},{{ row.1|title }},{{ row.2|title }},{{ row.3 }},{{ row.4 }},{{ row.5 }},
+	{{ row.0 }},{{ row.1|title }},{{ row.2|title }},{{ row.3 }},{{ row.4 }},{{ row.5 }},{{ row.6 }},
 {% endfor %}
 
 

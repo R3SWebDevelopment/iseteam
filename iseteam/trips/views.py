@@ -15,7 +15,7 @@ from django.views.generic import DeleteView, ListView
 from django.contrib.auth import authenticate, login
 
 from iseteam.trips.forms import TripForm, BusCheckInForm, PayTripForm, ImageTripForm, SignUpForm
-from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm
+from iseteam.trips.forms import LogInForm, RoomForm, MultipleRoomForm, BusForm, MultipleBusForm, AddPersonForm
 from iseteam.trips.models import Trip, BusCheckIn, PayTrip, Confirmation, Room, ImageTrip, GalleryTrip,\
     PaymentAssignment
 from iseteam.trips.models import CardPayment
@@ -550,6 +550,31 @@ def admin_hotel_records_add_multiple_bus(request, tripID):
 
 @staff_member_required
 @login_required(login_url='/login/')
+def admin_hotel_records_add_person(request, tripID, target, targetID):
+    trip = get_object_or_404(Trip, pk=tripID)
+
+    form = AddPersonForm(request.POST, trip=trip, target=target, target_id=targetID) \
+        if request.method == 'POST' else AddPersonForm(trip=trip, target=target, target_id=targetID)
+    target_obj = form.fields['target'].initial
+
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+
+    if target.upper() == 'BUS':
+        title = 'Add Person to Bus {}'.format(target_obj)
+    else:
+        title = 'Add Person to Room {}'.format(target_obj)
+    create_label = 'Add Person'
+    action_url = request.path
+
+    return render_to_response('admin/modal-inner-form.html',
+                              {'form': form, 'action_url': action_url, 'create_label': create_label,
+                               'mode': 'create', 'title': title, 'reload_when_submit_success': True},
+                              context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
 def admin_hotel_records_remove_bus(request, tripID, busID):
     trip = get_object_or_404(Trip, pk=tripID)
     buses = trip.get_buses
@@ -588,6 +613,27 @@ def admin_hotel_records_edit_bus(request, tripID, busID):
                               {'form': form, 'action_url': action_url, 'update_label': update_label,
                                'mode': 'update', 'title': title, 'reload_when_submit_success': True},
                               context_instance=RequestContext(request))
+
+
+@staff_member_required
+@login_required(login_url='/login/')
+def admin_bus_records_change_seat(self, tripID, seat, seat_number):
+    trip = get_object_or_404(Trip, pk=tripID)
+
+    seats_confirmed = trip.seats_confirmed
+
+    seat_confirmed = seats_confirmed.filter(id=seat).first() if seats_confirmed.exists() else None
+
+    if seat_confirmed is None:
+        raise Http404("Seat Confirmation does not exists")
+
+    seat_number = int(seat_number)
+
+    seat_confirmed.assign_number(seat_number=seat_number)
+
+    url = reverse('admin_bus_records', kwargs={'tripID': tripID})
+    return redirect(url)
+
 
 @staff_member_required
 @login_required(login_url='/login/')
@@ -762,6 +808,7 @@ def buses_records_excel(request, tripID):
             record.confirmation,
             record.timestamp,
             record.bus,
+            record.seat_number,
             ))
         count += 1
     t = loader.get_template('buses_excel.txt')  # Should be a parameter not hard coded
